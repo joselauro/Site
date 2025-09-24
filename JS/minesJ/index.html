@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mines</title>
+    <style media="screen" type="text/css">
+    .btnStyle1 { width:65px;height:25px; color: red}
+    </style>
+   
+  </head>
+  <body alink="#EE0000" bgcolor="#ffffcc" link="#0000EE" text="#000000"
+    vlink="#551A8B">
+
+    <link rel="manifest" href="/manifest.json">
+
+    <img id="nmR" src="nmR.png" width="0" height="0">
+    <img id="sad" src="sad.png" width="0" height="0">
+    <img id="minesC" src="minesC.png" width="0" height="0">
+    <img id="mines0B" src="mines0b.png" width="0" height="0">
+    <img id="marcaImg" src="marca.jpg" width="0" height="0">
+    <div id="linha0">0</div><div id="linhaM">0</div>
+
+
+   <form id="linhas">
+     <input name="linha3" type="text"  style="width:60px;font-size:18pt">
+     <input name="linha4" type="text"  style="width:60px;font-size:18pt">
+     <input name="linha5" type="text"  style="width:60px;font-size:18pt">
+     <img id="comecar" src="hap.png" height="24" width="24"  onclick="NewGame()">
+     <img id="marca0" src='clica.jpg' height="24" width="24"  onclick="marca()">
+    
+   </form>
+  
+    <p>
+
+   
+    <canvas id="myCanvas" width="1900" height="1900"> </canvas>
+
+    <script>
+
+
+    if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js')
+      .then(function () {
+        console.log('service worker registered');
+      })
+      .catch(function () {
+        console.warn('service worker failed');
+      });
+  }
+	    
+
+    window.addEventListener('load', function() {
+            draw_board();
+        });
+
+
+
+    ////////////////////////
+    //Functions	    
+
+
+    function recarregarPagina() {
+    location.reload(true);}
+
+    function marca()
+   {
+      if (Marca==false) 
+         { Marca=true;
+	   marca0.src='marca.jpg';
+		     }
+      else
+	 { Marca=false;
+	   marca0.src='clica.jpg';
+		     }  
+    }
+	    
+	    
+
+    function draw_board()
+	    {
+            
+             var img3 = document.getElementById("minesC"); 
+	     for (i = 1; i < hsize+1; i++) {
+	      for (j = 1; j < vsize+1; j++) { 
+	            ctx.drawImage(img3,(i-1)*24,(j-1)*24);
+                }
+               }
+
+     for (i = 0; i <vsize+2; i++) {
+	   for (j = 0; j <hsize+2; j++) { 
+	      myBoard[i][j]=0;
+              BoardStatus[i][j]=1; // 1 means clicked.
+            }
+         }
+
+
+     for (i = 1; i <vsize+1; i++) {
+	   for (j = 1; j<hsize+1; j++) { 
+	      BoardStatus[i][j]=0;  // 0 means never clicked.
+	      BoardMarcado[i][j]=0;  // 0 means not marcado.
+            }
+         }
+
+      nn=0;	
+
+				     
+      RaTio=(NumberofMines/(hsize*vsize));				       
+
+
+
+      for (r = 0; r < 2; r++) {
+
+      while (nn< NumberofMines){
+        for (i = 1; i <vsize+1; i++) {
+	   for (j = 1; j <hsize+1; j++) { 
+	        if (Math.random()<RaTio && nn<NumberofMines && myBoard[i][j]==0) {
+                    myBoard[i][j]=1;
+		    nn=nn+1;
+	        }
+               }
+              }
+             }			            
+            }				
+	   }
+
+
+     function soma (a,b)
+       {
+	 c=myBoard[a-1][b-1]+myBoard[a-1][b]+myBoard[a-1][b+1]+myBoard[a][b-1]+myBoard[a][b+1]+myBoard[a+1][b-1]+myBoard[a+1][b]+myBoard[a+1][b+1];	
+	return c;	  
+       }
+	    
+
+     function play(m,n)
+       { 
+
+	  let result =" ";  // result must be a local variable.
+
+          if (myBoard[m][n]==0 && BoardStatus[m][n]==0) 
+	   {
+              BoardStatus[m][n]=1;
+            
+	     if (soma(m,n)==0)
+	      {
+              result="mines0B";
+	      }
+	     if (soma(m,n)==1)
+	      {
+              result="mines1B";
+	      }
+	     if (soma(m,n)==2)
+	      {
+              result="mines2B";
+	      }
+             if (soma(m,n)==3)
+	      {
+              result="mines3B";
+	      }
+             if (soma(m,n)==4)
+	      {
+              result="mines4B";
+	      }
+             if (soma(m,n)==5)
+	      {
+              result="mines5B";
+	      }
+	      if (soma(m,n)==6)
+	      {
+              result="mines6B";
+	      }
+             if (soma(m,n)==7)
+	      {
+              result="mines7B";
+	      }
+             if (soma(m,n)==8)
+	      {
+              result="mines8B";
+	      }
+	   }           
+	  else if (BoardStatus[m][n]==0) 
+
+	   {
+              result="nmR";
+	   }		   
+	   return result;
+       }
+
+        function Play(M,N)
+       {   
+            
+	     if (Marca==false && BoardStatus[M][N]==0 && BoardMarcado[M][N]==0) {
+	     var img2 = document.getElementById("mines0B");
+			
+	     ctx.drawImage(img2,24*(N-1),24*(M-1));
+
+             ctx.font= "bold 20px Arial"; 
+
+	     temp=play(M,N);
+	
+
+	     NofClicks=NofClicks+1;
+
+	    
+	     if (NofClicks+NumberofMines==vsize*hsize && shownlost==false) {
+                comecar.src="cool.png";
+	        alert("You win!");
+		}			 
+
+	     		 	
+	     document.getElementById("linha0").innerText =NofClicks;
+
+
+	  
+	     if (temp=="mines1B") { ctx.fillStyle="blue";  ctx.fillText("1",6+24*(N-1),20+24*(M-1));}
+             if (temp=="mines2B") { ctx.fillStyle="green"; ctx.fillText("2",6+24*(N-1),20+24*(M-1));}
+             if (temp=="mines3B") { ctx.fillStyle="red";   ctx.fillText("3",6+24*(N-1),20+24*(M-1));}
+	     if (temp=="mines4B") { ctx.fillStyle="brown"; ctx.fillText("4",6+24*(N-1),20+24*(M-1));}
+             if (temp=="mines5B") { ctx.fillStyle="gray";   ctx.fillText("5",6+24*(N-1),20+24*(M-1));}
+             if (temp=="mines6B") { ctx.fillStyle="yellow";   ctx.fillText("6",6+24*(N-1),20+24*(M-1));}
+	     if (temp=="mines7B") { ctx.fillStyle="green"; ctx.fillText("7",6+24*(N-1),20+24*(M-1));}
+             if (temp=="mines8B") { ctx.fillStyle="red";   ctx.fillText("8",6+24*(N-1),20+24*(M-1));}
+	     if (temp=="nmR")     { ctx.fillText("\u{1F4A3}",24*(N-1),19+24*(M-1)); comecar.src="sad.png";  
+                               if (shownlost==false)
+			          {  
+	                           alert("Lost!");
+				   shownlost=true;
+			           play_all();
+		                   document.getElementById("linha0").innerText =NofClicks-1;
+
+                                  }
+			 }
+
+
+	     BoardStatus[M][N]=1;
+	     if (soma(M,N)==0)
+	     { 
+
+                if (M-1>0 && N-1>0 && M-1<vsize+1 && N-1< hsize+1 && BoardStatus[M-1][N-1]==0) {Play(M-1,N-1);}		
+                if (M-1>0 && N>0 && M-1< vsize+1 && N<hsize+1 && BoardStatus[M-1][N]==0) {Play(M-1,N);}	
+		if (M-1>0 && N+1>0 && M-1< vsize+1 && N+1<hsize+1 && BoardStatus[M-1][N+1]==0) {Play(M-1,N+1);}
+
+		if (M>0 && N-1>0 && M<vsize+1 && N-1<hsize+1 && BoardStatus[M][N-1]==0) {Play(M,N-1);}		
+		if (M>0 && N+1>0 && M<vsize+1 && N+1<hsize+1 && BoardStatus[M][N+1]==0) {Play(M,N+1);}			 
+
+		if (M+1>0 && N-1>0 && M+1<vsize+1 && N-1<hsize+1 && BoardStatus[M+1][N-1]==0) {Play(M+1,N-1);}		
+                if (M+1>0 && N>0 && M+1<vsize+1 && N<hsize+1 && BoardStatus[M+1][N]==0) {Play(M+1,N);}	
+		if (M+1>0 && N+1>0 && M+1<vsize+1 && N+1<hsize+1 && BoardStatus[M+1][N+1]==0) {Play(M+1,N+1);}	
+			 } 
+		}
+
+	     else if (BoardStatus[M][N]==0 && BoardMarcado[M][N]==0 && Marca==true)
+		{
+		   var img2 = document.getElementById("marcaImg");			
+	           ctx.drawImage(img2,24*(N-1),24*(M-1));
+		   BoardMarcado[M][N]=1;
+	           NMarcados=NMarcados+1;	
+	           document.getElementById("linhaM").innerText=NumberofMines-NMarcados;	
+
+		}
+	     else  if (BoardStatus[M][N]==0 && BoardMarcado[M][N]==1 && Marca==true)
+	       {
+                   var img2 = document.getElementById("minesC");			
+	           ctx.drawImage(img2,24*(N-1),24*(M-1));
+		   BoardMarcado[M][N]=0;
+	           NMarcados=NMarcados-1;	
+	           document.getElementById("linhaM").innerText=NumberofMines-NMarcados;	
+
+	        }
+       }
+                     
+	    
+      function play_all()
+      {
+        for (i = 1; i < vsize+1; i++) {
+	   for (j = 1; j < hsize+1; j++) 
+              { if (BoardStatus[i][j]==0) {Play(i,j);}	}
+         }			    
+      }
+
+
+
+     function NewGame()
+     {
+	ctx.clearRect(0, 0, canvas.width, canvas.height);		 
+       	      	    
+        for (i = 1; i <50; i++) {
+	   for (j = 1; j<50; j++) { 
+	      myBoard[i][j]=0;
+	      BoardStatus[i][j]=0;  // 0 means never clicked.
+	      BoardMarcado[i][j]=0;  // 0 means not marcado.
+            }
+         }
+
+
+       NumberofMines=parseInt(linhas.linha5.value);
+       hsize=parseInt(linhas.linha3.value);
+       vsize=parseInt(linhas.linha4.value);
+	 if (hsize>50) {linhas.linha3.value="50"; hsize=50; alert("Max size is 50");}
+	 if (vsize>50) {linhas.linha4.value="50"; vsize=50; alert("Max size is 50");}
+
+       NofClicks=0;
+       NMarcados=0;
+       shownlost=false;	    
+       ctx.scale(1, 1);
+       scale=1;
+       Marca=false;
+       document.getElementById("linhaM").innerText=NumberofMines-NMarcados;	
+       draw_board();
+       comecar.src="hap.png"; 
+       document.getElementById("linha0").innerText =0;
+
+		 }
+
+///////////////////
+///End of the functions.	    
+
+
+
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+
+    var NumberofMines=40;
+    var hsize=20;
+    var vsize=12;
+    var NofClicks=0;
+    var NMarcados=0;
+    var shownlost=false;
+
+    linhas.linha3.value=hsize;
+    linhas.linha4.value=vsize;	    
+    linhas.linha5.value=NumberofMines;
+
+    ctx.scale(1, 1);
+    var scale=1;
+    var Marca=false;
+    let myBoard = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+    let BoardStatus = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]]; 
+    let BoardMarcado = [[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[],[]];
+    document.getElementById("linhaM").innerText=NumberofMines-NMarcados;	
+
+
+      canvas.addEventListener('click', function(event) {
+      var rect = canvas.getBoundingClientRect();
+      var x = event.clientX - rect.left;
+      var y = event.clientY - rect.top;
+
+
+      i=Math.floor(y/(24*scale))+1;
+      j=Math.floor(x/(24*scale))+1;
+
+      if (i<=vsize && j<=hsize)
+      {
+      Play(i,j);
+      }
+
+     });
+
+    </script>
+     
+    <br>
+    </body>
+</html>

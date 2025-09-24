@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 25.8.1.1 (Windows)"/>
+	<meta name="created" content="2025-09-11T17:08:33.327012900"/>
+	<meta name="changed" content="2025-09-21T16:51:14.526641700"/>
+	<style type="text/css">
+		a:visited { color: #383838 }
+	</style>
+</head>
+<body lang="pt-BR" vlink="#383838" dir="ltr"><p style="margin-bottom: 0cm">
+<br/>
+
+</p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><font color="#ff0000"><font size="5" style="font-size: 20pt"><b>Programas
+em Python 3</b></font></font></p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><b>integral definida.</b></p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm">import math<br/>
+        <br/>
+def f
+(x):<br/>
+    result=x*math.sin(x**2)<br/>
+    return result<br/>
+   
+<br/>
+dx=0.0001<br/>
+integ=0.0<br/>
+x=0.0001  <br/>
+while x&lt;1:<br/>
+
+   integ=integ+f(x)*dx<br/>
+    x=x+dx<br/>
+<br/>
+print(integ)</p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm"><b>Imtegral definida, melhorado.</b></p>
+<p style="margin-bottom: 0cm"><br/>
+
+</p>
+<p style="margin-bottom: 0cm">import math<br/>
+<br/>
+def polylog(x):<br/>
+
+   soma=0<br/>
+    for k in range(1,10000):<br/>
+       
+soma=soma+x**k/k**2<br/>
+    return soma<br/>
+        <br/>
+def f
+(x):<br/>
+    resu=math.log(1-x)*polylog(1-x**0.5)/x<br/>
+    return
+resu<br/>
+<br/>
+<br/>
+a = 0.0001<br/>
+b = 1<br/>
+<br/>
+<br/>
+n =
+1_000_000<br/>
+dx = (b - a) / n<br/>
+<br/>
+integ = 0.5 * (f(a) +
+f(b))<br/>
+for i in range(1, n):<br/>
+    x = a + i * dx<br/>
+   
+integ += f(x)<br/>
+integ *= dx<br/>
+<br/>
+print(integ) 
+</p>
+</body>
+</html>

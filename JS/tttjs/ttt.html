@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>ttt2</title>
+    <style media="screen" type="text/css">
+    .btnStyle1 { width:65px;height:25px; color: red}
+    </style>
+    <script>
+
+       var myboard = new Array;
+       var played=false;
+       var gameover=false;
+
+       for (i = 1; i < 11; i++) { 
+         myboard[i]=0;
+       }
+       
+
+
+
+      function checkwin()
+      {
+              if (myboard[7]+myboard[8]+myboard[9]==-3) { gameover=true; alert("you win!")}
+	      if (myboard[4]+myboard[5]+myboard[6]==-3) { gameover=true; alert("you win!")}
+	      if (myboard[1]+myboard[2]+myboard[3]==-3) { gameover=true; alert("you win!")} 
+              if (myboard[1]+myboard[4]+myboard[7]==-3) { gameover=true; alert("you win!")}
+	      if (myboard[2]+myboard[5]+myboard[8]==-3) { gameover=true; alert("you win!")}
+	      if (myboard[3]+myboard[6]+myboard[9]==-3) { gameover=true; alert("you win!")} 
+	      if (myboard[1]+myboard[5]+myboard[9]==-3) { gameover=true; alert("you win!")}
+	      if (myboard[3]+myboard[5]+myboard[7]==-3) { gameover=true; alert("you win!")} 
+      
+      }
+
+
+
+
+       function cpuplay()
+       {
+
+	played=false;       
+
+        //playing to win
+        for (i=0; i<3;i++){
+         if ((myboard[i*3+1]+myboard[i*3+2]+myboard[i*3+3]==2)&played==false) 
+	 //1, 2 e 3. 4, 5 e 6, 7, 8 ee 9.
+	 // horizontals	 
+	 {
+		    if (myboard[i*3+1]==0&played==false){
+                         myboard[i*3+1]=1;
+			 if (i*3+1==1) {board1.src='o.jpg';}
+                         if (i*3+1==4) {board4.src='o.jpg';}
+			 if (i*3+1==7) {board7.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+		    if (myboard[i*3+2]==0&played==false){
+                         myboard[i*3+2]=1;
+		  	 if (i*3+2==2) {board2.src='o.jpg';}
+                         if (i*3+2==5) {board5.src='o.jpg';}
+			 if (i*3+2==8) {board8.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+		    if (myboard[i*3+3]==0&played==false){
+                         myboard[i*3+3]=1;
+			 if (i*3+3==3) {board3.src='o.jpg';}
+                         if (i*3+3==6) {board6.src='o.jpg';}
+			 if (i*3+3==9) {board9.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+	    }		 
+	} // for (i=0; i=2;i++){
+
+
+	//verticals
+         for (i=1; i<4;i++){
+         if ((myboard[i]+myboard[i+3]+myboard[i+6]==2)&played==false) 
+	 {
+		    if (myboard[i]==0&played==false){
+                         myboard[i]=1;
+			 if (i==1) {board1.src='o.jpg';}
+                         if (i==2) {board2.src='o.jpg';}
+			 if (i==3) {board3.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+		    if (myboard[i+3]==0&played==false){
+                         myboard[i+3]=1;
+		  	 if (i+3==4) {board4.src='o.jpg';}
+                         if (i+3==5) {board5.src='o.jpg';}
+			 if (i+3==6) {board6.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+		    if (myboard[i+6]==0&played==false){
+                         myboard[i+6]=1;
+			 if (i+6==7) {board7.src='o.jpg';}
+                         if (i+6==8) {board8.src='o.jpg';}
+			 if (i+6==9) {board9.src='o.jpg';}
+	                 played=true;
+			 alert("I win!");
+                       }
+	    }		 
+	}  
+
+	 //the diagonals
+        if ((myboard[1]+myboard[5]+myboard[9]==2) & (played==false)){
+       		if ((myboard[1]==0)&(played==false)){ myboard[1]=1; board1.src='o.jpg'; played=true; alert("I win!");}
+                if ((myboard[5]==0)&(played==false)){ myboard[5]=1; board5.src='o.jpg'; played=true; alert("I win!");}
+		if ((myboard[9]==0)&(played==false)){ myboard[9]=1; board9.src='o.jpg'; played=true; alert("I win!");}
+	}
+        if ((myboard[3]+myboard[5]+myboard[7]==2) & (played==false)){
+  		if ((myboard[3]==0)&(played==false)){ myboard[3]=1; board3.src='o.jpg'; played=true; alert("I win!");}
+                if ((myboard[5]==0)&(played==false)){ myboard[5]=1; board5.src='o.jpg'; played=true; alert("I win!");}
+		if ((myboard[7]==0)&(played==false)){ myboard[7]=1; board7.src='o.jpg'; played=true; alert("I win!");}
+	}
+
+
+        // playing for not loose! I just ctrl c, ctrl v the above code replacing 2 for -2.
+	//I could have used a for loop, but I think it is simpler this way.
+
+        for (i=0; i<3;i++){
+         if ((myboard[i*3+1]+myboard[i*3+2]+myboard[i*3+3]==-2)&played==false) 
+	 {
+		    if (myboard[i*3+1]==0&played==false){
+                         myboard[i*3+1]=1;
+			 if (i*3+1==1) {board1.src='o.jpg';}
+                         if (i*3+1==4) {board4.src='o.jpg';}
+			 if (i*3+1==7) {board7.src='o.jpg';}
+	                 played=true;
+                       }
+		    if (myboard[i*3+2]==0&played==false){
+                         myboard[i*3+2]=1;
+		  	 if (i*3+2==2) {board2.src='o.jpg';}
+                         if (i*3+2==5) {board5.src='o.jpg';}
+			 if (i*3+2==8) {board8.src='o.jpg';}
+	                 played=true;
+                       }
+		    if (myboard[i*3+3]==0&played==false){
+                         myboard[i*3+3]=1;
+			 if (i*3+3==3) {board3.src='o.jpg';}
+                         if (i*3+3==6) {board6.src='o.jpg';}
+			 if (i*3+3==9) {board9.src='o.jpg';}
+	                 played=true;
+                       }
+	    }		 
+	} // for (i=0; i=2;i++){
+
+
+         for (i=1; i<4;i++){
+         if ((myboard[i]+myboard[i+3]+myboard[i+6]==-2)&played==false) 
+	 {
+		    if (myboard[i]==0&played==false){
+                         myboard[i]=1;
+			 if (i==1) {board1.src='o.jpg';}
+                         if (i==2) {board2.src='o.jpg';}
+			 if (i==3) {board3.src='o.jpg';}
+	                 played=true;
+                       }
+		    if (myboard[i+3]==0&played==false){
+                         myboard[i+3]=1;
+		  	 if (i+3==4) {board4.src='o.jpg';}
+                         if (i+3==5) {board5.src='o.jpg';}
+			 if (i+3==6) {board6.src='o.jpg';}
+	                 played=true;
+                       }
+		    if (myboard[i+6]==0&played==false){
+                         myboard[i+6]=1;
+			 if (i+6==7) {board7.src='o.jpg';}
+                         if (i+6==8) {board8.src='o.jpg';}
+			 if (i+6==9) {board9.src='o.jpg';}
+	                 played=true;
+                       }
+	    }		 
+	}  //  for (i=1; i<4;i++){
+
+	 //the diagonals
+        if ((myboard[1]+myboard[5]+myboard[9]==-2) & (played==false)){
+       		if ((myboard[1]==0)&(played==false)){ myboard[1]=1;  board1.src='o.jpg'; played=true; }
+                if ((myboard[5]==0)&(played==false)){ myboard[5]=1;  board5.src='o.jpg'; played=true; }
+		if ((myboard[9]==0)&(played==false)){ myboard[9]=1;  board9.src='o.jpg'; played=true; }
+	}
+        if ((myboard[3]+myboard[5]+myboard[7]==-2) & (played==false)){
+  		if ((myboard[3]==0)&(played==false)){ myboard[3]=1;  board3.src='o.jpg'; played=true; }
+                if ((myboard[5]==0)&(played==false)){ myboard[5]=1;  board5.src='o.jpg'; played=true; }
+		if ((myboard[7]==0)&(played==false)){ myboard[7]=1;  board7.src='o.jpg'; played=true; }
+	}
+
+
+	product=myboard[1]*myboard[2]*myboard[3]*myboard[4]*myboard[5]*myboard[6]*myboard[7]*myboard[8]*myboard[9];
+
+	while ((played==false)&(product==0))  //If the game is draw product is non longer zero.
+	{
+	  	x=Math.floor((Math.random() * 9) + 1);
+		if (myboard[x]==0 & played==false)
+		{
+		  myboard[x]=1;
+		  played=true;
+		  if (x==1) { board1.src='o.jpg';}
+                  if (x==2) { board2.src='o.jpg';}
+		  if (x==3) { board3.src='o.jpg';}
+                  if (x==4) { board4.src='o.jpg';}
+		  if (x==5) { board5.src='o.jpg';}
+                  if (x==6) { board6.src='o.jpg';}
+		  if (x==7) { board7.src='o.jpg';}
+		  if (x==8) { board8.src='o.jpg';}
+                  if (x==9) { board9.src='o.jpg';}
+		}    	
+	}
+       
+
+       } //cpu play
+       
+
+       function aux()
+       {
+        checkwin();
+	played=false;
+	if (gameover==false){
+	cpuplay();}
+       }
+
+       function play7()
+       { board7.src='x.jpg';
+	 myboard[7]=-1;
+	 aux();
+       }
+
+       function play8()
+       { board8.src='x.jpg';
+	 myboard[8]=-1;
+	 aux();
+       }
+
+       function play9()
+       { board9.src='x.jpg';
+	 myboard[9]=-1;
+	 aux();
+       }
+
+       function play4()
+       { board4.src='x.jpg';
+	 myboard[4]=-1;
+	 aux();
+       }
+
+       function play5()
+       { board5.src='x.jpg';
+	 myboard[5]=-1;
+	 aux();
+       }
+
+       function play6()
+       { board6.src='x.jpg';
+	 myboard[6]=-1;
+	 aux();
+       }
+
+       function play1()
+       { board1.src='x.jpg';
+	 myboard[1]=-1;
+	 aux();
+       }
+
+       function play2()
+       { board2.src='x.jpg';
+	 myboard[2]=-1;
+	 aux();
+       }
+
+       function play3()
+       { board3.src='x.jpg';
+	 myboard[3]=-1;
+	 aux();
+       }
+
+    </script>
+  </head>
+  <body alink="#EE0000" bgcolor="#ffffcc" link="#0000EE" text="#000000"
+    vlink="#551A8B">
+    <table border="1" cellpadding="2" cellspacing="2" width="458">
+      <tbody>
+        <tr>
+          <td valign="top"><img id="board7" src="white.jpg" height="150" width="150"  onclick="play7()"><br>
+          </td>
+          <td valign="top"><img id="board8" src="white.jpg" height="150" width="150"  onclick="play8()"><br>
+          </td>
+          <td valign="top"><img id="board9" src="white.jpg" height="150" width="150"  onclick="play9()"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><img id="board4" src="white.jpg" height="150" width="150"  onclick="play4()"><br>
+          </td>
+          <td valign="top"><img id="board5" src="white.jpg" height="150" width="150"  onclick="play5()"><br>
+          </td>
+          <td valign="top"><img id="board6" src="white.jpg" height="150" width="150"  onclick="play6()"><br>
+          </td>
+        </tr>
+        <tr>
+          <td valign="top"><img id="board1" src="white.jpg" height="150" width="150"  onclick="play1()"><br>
+          </td>
+          <td valign="top"><img id="board2" src="white.jpg" height="150" width="150"  onclick="play2()"><br>
+          </td>
+          <td valign="top"><img id="board3" src="white.jpg" height="150" width="150"  onclick="play3()"><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <input onclick="cpuplay()" value="Play" type="button" class="btnStyle1">
+    <input onclick="location.reload();" value="New" type="button" class="btnStyle1">
+
+  </body>
+</html>

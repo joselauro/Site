@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html><head>
+
+<style media="screen" type="text/css">
+    .btnStyle1 { width:63px;height:54px; border: 1px #2E6DA4 solid;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   border-radius: 8px;
+   background-color: #3370B7;
+   background-image: none;
+   color: #FFFFFF;
+   font-size: 16px;
+    }
+    .btnStyle2 { width:63px;height:25px;
+     background-color: #3370B7;
+     background-image: none;
+     color: #FFFFFF;}
+    .btnStyle3 { width:130px;height:54px;
+     border: 1px #2E6DA4 solid;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   border-radius: 8px;
+   background-color: #3370B7;
+   background-image: none;
+   color: #FFFFFF;
+   font-size: 16px;
+    }
+     .btnStyle4 { width:63px;height:54px; border: 1px #2E6DA4 solid;
+   -moz-border-radius: 8px;
+   -webkit-border-radius: 8px;
+   border-radius: 8px;
+   background-color: #3370B7;
+   background-image: none;
+   color: #FFFFFF;
+   font-size: 11px;
+    }
+</style>
+<script>
+
+var
+  Memory = [];
+  MemoryInternal = [];
+  Stack = ["","","","","","","","","","","","","",""];
+  edicao=true;
+  novo=false;
+  Zoom=90;
+  Eativo=false;
+  learning=false;
+  Program="";
+  ProgramPosition=0;
+  running=false;
+
+/////////////////////////////////////////////////////////////////
+//Primitive complex functions
+//////////////////////
+
+function rounder(z)
+{
+     x=0;
+     img="0";
+     x=z.indexOf("i"); //se nao tem dá -1
+     if (x!=-1) {
+        real=z.substr(0, x-1);
+        img=z.substr(x+1,z.length);
+      }
+      else{
+        real=z;
+      }
+
+
+    if (real.length>14)
+    {
+      temp=parseFloat(real).toPrecision(14);
+      real=temp.toString();
+    }
+    if (img.length>14)
+    {
+      temp=parseFloat(img).toPrecision(14);
+      img=temp.toString();
+    }
+   
+  
+    if (real.indexOf("e")==-1)
+    {
+    //This is to eliminate "zeros at right".	    
+      Temp= real.length-real.indexOf(".");
+      
+      for (i = 0; i < Temp; i++) 
+      {
+         real.trim();
+ 	 if((real.charAt(real.length-1)=="0") && (real.length>1)&& (real.indexOf(".")!=-1)) 
+	 {     
+ 	   real=real.slice(0,real.length-1); 
+         }
+      }
+    }
+
+    if (img.indexOf("e")==-1)
+    {
+    //This is to eliminate "zeros at right".
+      Temp= img.length-img.indexOf(".");
+      for (i = 0; i < Temp; i++) 
+      {
+         img.trim();
+         if((img.charAt(img.length-1)=="0") && (img.length>1)&& (img.indexOf(".")!=-1)) 
+	 {     
+ 	   img=img.slice(0,img.length-1); 
+         }
+      }
+     }
+  if (img!="0") {
+     return real+' i'+img;
+  }
+  else
+  {	  
+     return real; 
+  }
+}
+
+
+function EXP(z)
+{
+  Pi=Math.PI;
+
+  x1=0;
+  img1="0";
+  x1=z.indexOf("i"); //se nao tem dá -1
+  if (x1!=-1) {
+     real1=z.substr(0, x1-1);
+     img1=z.substr(x1+1,z.length);
+  }
+  else{
+      real1=z;
+  }
+
+  sinimg1=Math.sin(parseFloat(img1));
+  cosimg1=Math.cos(parseFloat(img1));
+
+  //O que segue é para evitar erros de arredondamento nas funções seno e coseno.
+  if (img1==(Pi/2).toString())      //90º
+  {
+    sinimg1=1.0;
+    cosimg1=0.0;
+  }
+  if (img1==(Pi).toString())      //180º
+  {
+    sinimg1=0.0;
+    cosimg1=-1.0;
+  }
+  if (img1==(3*Pi/2).toString())   //270º
+  {
+    sinimg1=-1.0;
+    cosimg1=0.0;
+  }
+  real=(Math.exp(parseFloat(real1))*cosimg1).toString();
+  img=(Math.exp(parseFloat(real1))*sinimg1).toString();
+
+  if(img1=="0")
+  {
+     img="0"; //to avoid small spurious imaginary parts.	  
+  }
+
+
+
+  if (img!="0") {
+     return real+' i'+img;
+  }
+  else
+  {	  
+     return real; 
+  }
+}
+
+
+
+function LOG(z)
+{
+  Pi=Math.PI;
+  x1=0;
+  img1="0";
+  x1=z.indexOf("i"); //se nao tem dá -1
+  if (x1!=-1) {
+     real1=z.substr(0, x1-1);
+     img1=z.substr(x1+1,z.length);
+  }
+  else{
+      real1=z;
+  }
+
+  r=Math.sqrt(parseFloat(real1)*parseFloat(real1)+parseFloat(img1)*parseFloat(img1));
+
+  theta=Math.atan2(parseFloat(img1),parseFloat(real1));
+  //atan2 retorna o angulo no quadrante correto.
+
+  real=(Math.log(r)).toString();
+  img=(theta).toString();   
+
+  if ((img1==0)&&(real1>0))
+  {
+     img="0";
+  } 
+
+  if (img!="0") {
+     return real+' i'+img;
+  }
+  else
+  {	  
+     return real; 
+  }
+}
+
+
+function SQRT(z)
+{
+  if (parseFloat(z)!=0) 
+  {	
+    temp=POWER(z,"0.5");
+  }
+  else
+  {
+   temp="0";
+  }
+
+  x=0;
+  img="0";
+  real="0";
+  x=z.indexOf("i");
+  if (x!=-1) {
+    real=z.substr(0, x-1);
+    img=z.substr(x+1,z.length);
+    }
+  else
+   real=z;
+
+  x=0;
+  img2="0";
+  real2="0";
+  x=temp.indexOf("i");
+  if (x!=-1) {
+    real2=temp.substr(0, x-1);
+    img2=temp.substr(x+1,temp.length);
+    }
+  else
+   real2=temp;
+
+
+  if ((img=="0")&&(parseFloat(real)>=0))
+  { //a raiz será real
+    img2="0";
+     
+  }
+  if ((img=="0")&&(parseFloat(real)<0))
+  { //a raiz será imaginária pura
+     real2="0";
+  }
+
+  if (img2!="0"){
+       temp=rounder(real2+" i"+img2);
+    }
+  else
+       temp=rounder(real2);
+
+  return temp;
+}
+
+
+
+function POWER(z1,z2)
+{
+//returns z1^z2
+return rounder(EXP(TWOIMPUTS("*",z2,LOG(z1))));	
+}
+
+
+
+function TWOIMPUTS(kind,z1,z2)
+{
+//z1 and z2 are strings representing complex numbers.
+//If kind="+" it returns addition, etc
+
+    x1=0;
+    x2=0;
+    img1="0";
+    img2="0";
+    x1=z1.indexOf("i");
+    if (x1!=-1) {
+      real1=z1.substr(0, x1-1);
+      img1=z1.substr(x1+1,z1.length);
+    }
+    else
+      real1=z1;
+
+    x2=z2.indexOf("i"); 
+    if (x2!=-1) {
+       real2=z2.substr(0, x2-1);
+       img2=z2.substr(x2+1,z2.length);
+    }
+    else
+      real2=z2;
+
+    if (kind=="+"){ //adition
+       real=(parseFloat(real1)+parseFloat(real2)).toString();
+       img=(parseFloat(img1)+parseFloat(img2)).toString();
+    }
+    if (kind=="-"){ //subtraction
+       real=(parseFloat(real2)-parseFloat(real1)).toString();
+       img=(parseFloat(img2)-parseFloat(img1)).toString();
+    }
+
+    if (kind=="*"){ //complex multiplication
+       real=(parseFloat(real1)*parseFloat(real2)-parseFloat(img1)*parseFloat(img2)).toString();
+       img=(parseFloat(real1)*parseFloat(img2)+parseFloat(real2)*parseFloat(img1)).toString();
+    } 
+
+    if ((kind=="*") && (img1=="0") && (img2=="0")){ //real multiplication
+       real=(parseFloat(real1)*parseFloat(real2)).toString();
+       img="0"; 
+    }
+    if (kind=="/"){ //division
+       divi=parseFloat(real1)*parseFloat(real1)+parseFloat(img1)*parseFloat(img1); 
+       real=((parseFloat(real2)*parseFloat(real1)+parseFloat(img1)*parseFloat(img2))/divi).toString();
+       img=((parseFloat(real1)*parseFloat(img2)-parseFloat(real2)*parseFloat(img1))/divi).toString();
+    }
+    
+
+    if (img!="0"){
+       return rounder(real+" i"+img);
+    }
+    else
+    {	    
+       return rounder(real); 
+    }
+}
+
+
+
+function INV(z)
+{
+  return TWOIMPUTS("/", z,"1");	
+}
+
+function NEG(z)
+{
+  return TWOIMPUTS("*",z,"-1");	
+}
+
+///////////////////////////////
+//Other functions
+///////////////////////////
+
+
+function gamma(z)
+{
+ //This function is not working!	
+ 
+ var c= new Array;
+ //This implements the Spouge's approximation for gamma function with a=12.
+
+ zz=TWOIMPUTS("-","1",z);
+
+ //calculation of the parameters
+ c[0]=Math.sqrt(2*Math.acos(-1)).toString();
+ 
+
+ for (k = 1; k < 12; k++)
+ {
+    c[k]=(Math.pow(-1,k-1)*Math.pow(-k+12,k-0.5)*Math.exp(-k+12)/fact(k-1)).toString();
+ }
+
+ //calculation of the summation
+ summ=c[0];
+
+ for (k = 1; k < 12; k++)
+ {  
+    temp=TWOIMPUTS("/",TWOIMPUTS("+",zz,k.toString()),c[k]);	 
+    summ=TWOIMPUTS("+",summ,temp);
+ }
+
+
+ //final calculation
+ 
+ result=POWER(TWOIMPUTS("+",zz,"12"),TWOIMPUTS("+",zz,"0.5"));
+ result=TWOIMPUTS("*",result,summ);
+ result=TWOIMPUTS("*",result,EXP(TWOIMPUTS("-","12",NEG(zz))));
+ return result; 
+}   
+
+
+function MyZoom() {
+    var w = window.innerWidth;
+    var h = window.innerHeight;
+
+    zoomw=w/355;
+    zoomh=h/535;
+
+     if (window.matchMedia("(orientation: portrait)").matches) {
+     // you're in PORTRAIT mode 
+      zoomh=w/355;
+      zoomw=h/535;}
+
+    if (zoomw>zoomh){
+        Zoom=zoomh*100;
+     }else{
+        Zoom=zoomw*100;
+     }
+
+     document.body.style.zoom = Zoom.toString()+"%"; 
+}
+
+
+
+function LitleHelp()
+{ //Things that repeat a lot.
+    novo=true;
+    edicao=false;
+    Eativo=false;
+}
+function R2C()
+{
+   linhas.linha1.value=linhas.linha2.value+" i"+linhas.linha1.value;
+   linhas.linha2.value=linhas.linha3.value;
+   linhas.linha3.value=linhas.linha4.value;
+   linhas.linha4.value=linhas.linha5.value;
+   linhas.linha5.value=Stack[6];
+   for(irc=6;irc<1000;irc++)
+    {
+     Stack[irc]=Stack[irc+1];
+    }
+    Stack[1000]="";
+   edicao=false;  
+}
+function C2R()
+{
+    img="0";
+    x=linhas.linha1.value.indexOf("i");
+    real=linhas.linha1.value.substr(0, x-1);
+    if (x!=-1) //raios!
+    {
+      enterenter();	    
+      img=linhas.linha1.value.substr(x+1,linhas.linha1.length);
+      linhas.linha2.value=real;
+      linhas.linha1.value=img;
+    }
+    
+    edicao=false; 
+}
+
+function fact(n)
+{
+	if (n==1||n==0) 
+	   {
+		   return 1;
+	   }
+	else
+	   {
+		   return n*fact(n-1);
+	   }
+}
+
+function MFact()
+{
+    linhas.linha1.value=(fact(parseInt(linhas.linha1.value))).toString();
+    novo=true;
+    edicao=false;
+    Eativo=false;
+}	
+
+
+function IsPrime()
+{
+  num=parseInt(linhas.linha1.value);
+  divisor=3;
+  root=Math.sqrt(num);
+
+  if (num/2-Math.floor(num/2)==0)
+  {
+   alert("This number is divisible by 2");
+  }
+  else
+  {
+   while((divisor<root+1)&&(num/divisor-Math.floor(num/divisor)!=0))
+   {
+    divisor=divisor+2;
+   }
+   if (num/divisor-Math.floor(num/divisor)==0&&(num!=divisor))
+   {
+     alert("This number is divisible by "+divisor.toString());
+   }
+   else
+   {
+     alert("This number is prime.");
+   }
+  }
+   novo=true;
+   edicao=false;
+   Eativo=false;
+}
+
+
+function MRoot()
+{
+    linhas.linha1.value=POWER(linhas.linha2.value,INV(linhas.linha1.value));
+    linhas.linha2.value=linhas.linha3.value;
+    linhas.linha3.value=linhas.linha4.value;
+    linhas.linha4.value=linhas.linha5.value;
+    linhas.linha5.value=Stack[6];
+    for(irc=6;irc<1000;irc++)
+    {
+     Stack[irc]=Stack[irc+1];
+    }
+    Stack[1000]="";
+    LitleHelp();
+}  
+
+function MPow()
+{
+    x1=linhas.linha1.value.indexOf("i");
+    x2=linhas.linha2.value.indexOf("i");
+    if ((x1==-1)&&(x2==-1)&&(parseFloat(linhas.linha2.value)>0)){ 
+	 linhas.linha1.value=(Math.pow(parseFloat(linhas.linha2.value),parseFloat(linhas.linha1.value))).toString();
+	 //This non-complex version is to avoid stupid things like 5^2=24.999999999999996.
+
+    }
+    else
+         linhas.linha1.value=POWER(linhas.linha2.value,linhas.linha1.value);
+
+    linhas.linha2.value=linhas.linha3.value;
+    linhas.linha3.value=linhas.linha4.value;
+    linhas.linha4.value=linhas.linha5.value;
+    linhas.linha5.value=Stack[6];
+    for(irc=6;irc<1000;irc++)
+    {
+     Stack[i]=Stack[i+1];
+    }
+    Stack[1000]="";
+    LitleHelp();
+}  
+
+function MSqrt()
+{
+    linhas.linha1.value=SQRT(linhas.linha1.value);
+    LitleHelp();
+}  
+
+function MLog()
+{
+    linhas.linha1.value=LOG(linhas.linha1.value);
+    LitleHelp();
+}  
+function MExp()
+{
+    linhas.linha1.value=EXP(linhas.linha1.value);
+    LitleHelp();
+}  
+
+function MSin()
+{   
+    z=linhas.linha1.value;
+    x1=z.indexOf("i");
+    if(x1!=-1)
+    {  //sin(x)=(exp(ix)-exp(-ix))/2i 
+       temp1=EXP(TWOIMPUTS("*",z,"0 i1"));    //exp(iz)
+       temp2=EXP(TWOIMPUTS("*",z,"0 i-1"));   //exp(-iz)
+       linhas.linha1.value=TWOIMPUTS("/","0 i2",TWOIMPUTS("-",temp2,temp1));
+    }
+    else
+    {
+       linhas.linha1.value=(Math.sin(parseFloat(z))).toString();
+    }
+    LitleHelp();
+}  
+function MCos()
+{ 
+    z=linhas.linha1.value;
+    x1=z.indexOf("i");
+    if(x1!=-1)
+    {  //cos(x)=(exp(ix)+exp(-ix))/2 
+       temp1=EXP(TWOIMPUTS("*",z,"0 i1"));    //exp(iz)
+       temp2=EXP(TWOIMPUTS("*",z,"0 i-1"));   //exp(-iz)
+       linhas.linha1.value=TWOIMPUTS("/","2",TWOIMPUTS("+",temp2,temp1));
+    }
+    else
+    {
+       linhas.linha1.value=(Math.cos(parseFloat(z))).toString();
+    }
+    LitleHelp();
+}  
+function MTan()
+{   z=linhas.linha1.value;
+    x1=z.indexOf("i");
+    if(x1!=-1)
+    { 	
+       //tan(x)=sin(x)/cos(x)
+       temp1=EXP(TWOIMPUTS("*",z,"0 i1"));    //exp(iz)
+       temp2=EXP(TWOIMPUTS("*",z,"0 i-1"));   //exp(-iz)
+       TSin=TWOIMPUTS("/","0 i2",TWOIMPUTS("-",temp2,temp1)); //sin(z)
+       TCos=TWOIMPUTS("/","2",TWOIMPUTS("+",temp2,temp1));    //cos(z)
+       linhas.linha1.value=TWOIMPUTS("/",TCos,TSin);
+    }
+    else
+    {
+       linhas.linha1.value=(Math.tan(parseFloat(z))).toString();
+    }	    
+    LitleHelp();
+}  
+
+function SEQT()
+{
+ enterenter();	
+ enter3();
+ stoInternal(); 
+ linhas.linha1.value="0";
+ mais()
+ enter2();
+ stoInternal();
+ linhas.linha1.value="0";
+ mais() 
+ enter1();
+ stoInternal(); 
+ doc();
+ doc();	 
+
+ enter2();
+ rclInternal();
+ enterenter();
+ vezes();
+ enter4();
+ enterenter();
+ enter1();
+ rclInternal(); 
+ enter3();
+ rclInternal(); 
+ vezes();
+ vezes();
+ menos();
+ enter4();
+ stoInternal();
+
+ enter2();
+ rclInternal();
+ pm();
+
+ enter4();
+ rclInternal();
+ MSqrt();
+ menos();
+ enter2();
+ dividido();
+ enter1();
+ rclInternal(); 
+ dividido();
+
+ enter2();
+ rclInternal();
+ pm();
+ enter4();
+ rclInternal();
+ MSqrt();
+ mais();
+ enter2();
+ dividido();
+ enter1();
+ rclInternal(); 
+ dividido();
+}
+
+
+
+function MaSin()
+{   //arcsin(x)=-i*ln[ix+sqrt(1-x^2)] 
+    z=linhas.linha1.value;
+    temp=TWOIMPUTS("*","0 i-1",LOG(TWOIMPUTS("+",SQRT(TWOIMPUTS("-",POWER(z,"2"),"1")),TWOIMPUTS("*","0 i1",z))));  
+    if(z=="0"){temp="0"}
+    x1=z.indexOf("i");
+    if(x1==-1)
+    {
+      x2=parseFloat(z);
+      if (-1<x2&&x2<1) 
+      {  
+	  temp=Math.asin(x2).toString(); //non complex
+      }
+    }	    
+    linhas.linha1.value=temp;
+    LitleHelp();
+}  
+function MaCos()
+{   //arccos(x)=pi/2-arcsin(x)   
+    z=linhas.linha1.value;
+
+    temp=TWOIMPUTS("*","0 i-1",LOG(TWOIMPUTS("+",SQRT(TWOIMPUTS("-",POWER(z,"2"),"1")),TWOIMPUTS("*","0 i1",z)))); 
+    temp2=TWOIMPUTS("-",temp,"1.5707963267949");
+    if(z=="1"){temp2="0"}
+    x1=z.indexOf("i");
+    if(x1==-1)
+    {
+      x2=parseFloat(z);
+      if (-1<x2&&x2<1) 
+      {  
+	  temp2=Math.acos(x2).toString(); //non complex
+      }
+    }	    
+
+    linhas.linha1.value=temp2;
+    LitleHelp();
+}  
+function MaTan()
+{   //arctan(x)=(i/2)*[ln(1-ix)-ln(1+ix)] 
+    z=linhas.linha1.value;
+    temp=TWOIMPUTS("*","0 i1",z);
+    temp2=LOG(TWOIMPUTS("-",temp,"1"));  
+    temp3=LOG(TWOIMPUTS("+",temp,"1"));
+    temp4=TWOIMPUTS("-",temp3,temp2);
+    temp5=TWOIMPUTS("*","0 i0.5",temp4);
+    x1=z.indexOf("i");
+    if(x1==-1)
+    {
+      x2=parseFloat(z); 
+      temp5=Math.atan(x2).toString(); //non complex
+    }	    
+    linhas.linha1.value=temp5;
+    LitleHelp();
+}  
+
+function MSinh()
+{
+    z=linhas.linha1.value;
+    temp=TWOIMPUTS("/","2",TWOIMPUTS("-",EXP(NEG(z)),EXP(z)));
+    linhas.linha1.value=temp;
+    LitleHelp();
+}  
+function MCosh()
+{
+    z=linhas.linha1.value;
+    temp=TWOIMPUTS("/","2",TWOIMPUTS("+",EXP(NEG(z)),EXP(z)));
+    linhas.linha1.value=temp;
+    LitleHelp();
+}  
+function MTanh()
+{
+    z=linhas.linha1.value;
+    temp1=TWOIMPUTS("-",EXP(NEG(z)),EXP(z));
+    temp2=TWOIMPUTS("+",EXP(NEG(z)),EXP(z));
+    temp=TWOIMPUTS("/",temp2,temp1);
+    linhas.linha1.value=temp;
+    LitleHelp();
+}  
+
+function MaSinh()
+{
+    //arcsinh(z)=ln(z+sqrt(z^2+1)). 
+    z=linhas.linha1.value;
+    temp=LOG(TWOIMPUTS("+",SQRT(TWOIMPUTS("+",POWER(z,"2"),"1")),z));  
+    linhas.linha1.value=temp;
+    LitleHelp();
+}  
+function MaCosh()
+{
+    //arccosh(z)=ln[z+sqrt(z+1)*sqrt(z-1)]. 
+    z=linhas.linha1.value;
+    zpone=TWOIMPUTS("+","1",z); //z+1
+    zmone=TWOIMPUTS("-","1",z); //z-1
+    temp=LOG(TWOIMPUTS("+",TWOIMPUTS("*",SQRT(zmone),SQRT(zpone)),z));    
+    linhas.linha1.value=temp; 
+    LitleHelp();
+}  
+function MaTanh()
+{
+    //arctanh(z)=0.5*ln[(1+z)/(1-z)] 
+    z=linhas.linha1.value;
+    temp=LOG(TWOIMPUTS("/",TWOIMPUTS("-",z,"1"),TWOIMPUTS("+",z,"1")));
+    temp=TWOIMPUTS("/","2",temp);
+    linhas.linha1.value=temp;
+    LitleHelp();
+} 
+
+function sto()
+{   
+      Memory[Math.floor(parseInt(linhas.linha1.value))]=linhas.linha2.value;
+      linhas.linha1.value=linhas.linha2.value;
+      linhas.linha2.value=linhas.linha3.value;
+      linhas.linha3.value=linhas.linha4.value;
+      linhas.linha4.value=linhas.linha5.value;
+      linhas.linha5.value=Stack[6];
+      for(irc=6;irc<1000;irc++)
+      {
+       Stack[irc]=Stack[irc+1];
+      }
+      Stack[1000]="";
+      LitleHelp();		      		      
+}  
+
+function stoInternal()
+{   
+      MemoryInternal[Math.floor(parseInt(linhas.linha1.value))]=linhas.linha2.value;
+      linhas.linha1.value=linhas.linha2.value;
+      linhas.linha2.value=linhas.linha3.value;
+      linhas.linha3.value=linhas.linha4.value;
+      linhas.linha4.value=linhas.linha5.value;
+      linhas.linha5.value=Stack[6];
+      for(irc=6;irc<1000;irc++)
+      {
+       Stack[irc]=Stack[irc+1];
+      }
+      Stack[1000]="";
+      LitleHelp();		      		      
+}  
+
+function rcl()
+{
+      linhas.linha1.value=Memory[Math.floor(parseInt(linhas.linha1.value))];
+      LitleHelp();
+}  
+
+function rclInternal()
+{
+      linhas.linha1.value=MemoryInternal[Math.floor(parseInt(linhas.linha1.value))];
+      LitleHelp();
+}  
+
+function MPi()
+{
+    EntraNumeral((Math.PI).toString());
+    LitleHelp();
+}  
+
+function MPiSCO()
+{
+    EntraNumeral((Math.PI/180).toString());
+    LitleHelp();
+}	
+
+function pm()
+{
+   if (Eativo==false)
+   {	
+    linhas.linha1.value=NEG(linhas.linha1.value);
+   }
+   else
+   {
+    linhas.linha1.value=linhas.linha1.value+"-";
+    Eativo=false;
+   }
+}  
+  
+
+function xy()
+{
+    temp=linhas.linha2.value;
+    linhas.linha2.value=linhas.linha1.value;
+    linhas.linha1.value=temp;
+    Eativo=false;
+}  
+
+//Script created by Jose Lauro Strapasson.
+ 
+function mais(){TwoImputs("+")}; 
+function menos(){TwoImputs("-")}; 
+function vezes(){TwoImputs("*")}; 
+function dividido(){TwoImputs("/")};
+
+
+function TwoImputs(kind)
+{
+    z1=linhas.linha1.value;
+    z2=linhas.linha2.value;
+
+    linhas.linha1.value=TWOIMPUTS(kind,z1,z2);
+    linhas.linha2.value=linhas.linha3.value;
+    linhas.linha3.value=linhas.linha4.value;
+    linhas.linha4.value=linhas.linha5.value;
+    linhas.linha5.value=Stack[6];
+    for(irc=6;irc<1000;irc++)
+    {
+     Stack[irc]=Stack[irc+1];
+    }
+    Stack[1000]="";
+
+    LitleHelp();
+}
+	
+
+function R2P()
+{
+    x=linhas.linha2.value; 
+    y=linhas.linha1.value; 
+
+    r=Math.sqrt(parseFloat(x)*parseFloat(x)+parseFloat(y)*parseFloat(y)); //1
+    theta=Math.atan2(parseFloat(y),parseFloat(x));
+
+    linhas.linha1.value=theta.toString();
+    linhas.linha2.value=r.toString();
+    edicao=false;
+    novo=true;
+    Eativo=false;
+}
+
+
+function P2R()
+{
+    theta=linhas.linha1.value;
+    r=linhas.linha2.value;
+
+    x=parseFloat(r)*Math.cos(parseFloat(theta));
+    y=parseFloat(r)*Math.sin(parseFloat(theta));
+
+
+    linhas.linha1.value=y.toString();
+    linhas.linha2.value=x.toString();
+
+    edicao=false;
+    novo=true;
+    Eativo=false;
+}
+
+
+
+function inverso()
+{
+    linhas.linha1.value=INV(linhas.linha1.value)
+    LitleHelp();
+}
+
+function GAMMA()
+{
+    linhas.linha1.value=gamma(linhas.linha1.value);
+    LitleHelp();
+}
+
+function doc()
+{	
+    if (linhas.linha1.value=='')
+    {   
+      linhas.linha1.value=linhas.linha2.value;
+      linhas.linha2.value=linhas.linha3.value;
+      linhas.linha3.value=linhas.linha4.value;
+      linhas.linha4.value=linhas.linha5.value;
+      linhas.linha5.value=Stack[6];
+      for(irc=6;irc<1000;irc++)
+      {
+        Stack[irc]=Stack[irc+1];
+      }
+      Stack[1000]="";
+      LitleHelp();
+    }	    
+    else
+    {	    
+      linhas.linha1.value="";
+      Eativo=false;
+    }
+   
+
+
+}
+
+function cla()
+{   
+    for(irc=6;irc<=1000;irc++)
+    {
+     Stack[irc]="";
+    }	
+    linhas.linha5.value="";
+    linhas.linha4.value="";
+    linhas.linha3.value="";
+    linhas.linha2.value="";
+    doc();
+}
+
+function enterenter()
+{
+    for(irc=1000;irc>6;irc--)
+    {
+     Stack[irc]=Stack[irc-1];
+    }	
+    Stack[6]=linhas.linha5.value;
+    linhas.linha5.value=linhas.linha4.value;
+    linhas.linha4.value=linhas.linha3.value;
+    linhas.linha3.value=linhas.linha2.value;
+    linhas.linha2.value=linhas.linha1.value;
+    edicao=true;
+    novo=true;
+    Eativo=false;
+}
+  
+
+function EntraNumeral(Numeral)
+{
+  if(edicao==true)
+  {	  
+    if(novo==false)
+     {
+      linhas.linha1.value=linhas.linha1.value + Numeral;	
+      }
+    else
+     {
+       linhas.linha1.value=Numeral;
+       novo=false;	
+     }
+  }
+  else
+   {		   
+     for(irc=1000;irc>6;irc--)
+     {
+       Stack[irc]=Stack[irc-1];
+     }	   
+     Stack[6]=linhas.linha5.value;	   
+     linhas.linha5.value=linhas.linha4.value;
+     linhas.linha4.value=linhas.linha3.value;
+     linhas.linha3.value=linhas.linha2.value;
+     linhas.linha2.value=linhas.linha1.value;
+     linhas.linha1.value=Numeral;
+     edicao=true;
+     novo=false;
+     Eativo=false;
+  }
+}         
+
+function enterponto(){ EntraNumeral('.'); }
+function ME(){ 
+    if (Eativo==false)
+    {	    
+	EntraNumeral('e');
+	Eativo=true;
+    }
+}
+function enter0(){ EntraNumeral('0');}
+function enter1(){ EntraNumeral('1');}
+function enter2(){ EntraNumeral('2');}
+function enter3(){ EntraNumeral('3');}
+function enter4(){ EntraNumeral('4');}
+function enter5(){ EntraNumeral('5');}
+function enter6(){ EntraNumeral('6');}
+function enter7(){ EntraNumeral('7');}
+function enter8(){ EntraNumeral('8');}
+function enter9(){ EntraNumeral('9');} 
+
+
+function programming(ncode)
+{
+if (learning==true)
+   {	
+	Program=Program+ncode;
+   }
+}	
+
+
+function learn()
+{
+  running=false;	
+  if (learning==false)
+  {	  
+    learning=true;
+    Program="";
+    learnIMG.src="learn2.png";
+
+  }
+  else
+  
+  {	  
+    learning=false;
+    learnIMG.src="learn.png";
+  }  
+}	
+
+
+
+function runme()
+{
+learning=false;
+n = Program.length;
+if (ProgramPosition<n)
+  {	
+      index=ProgramPosition;
+ 
+	if (Program[index]=='0') {enter0();}
+        if (Program[index]=='1') {enter1();}
+        if (Program[index]=='2') {enter2();}
+        if (Program[index]=='3') {enter3();}
+	if (Program[index]=='4') {enter4();}
+        if (Program[index]=='5') {enter5();}
+        if (Program[index]=='6') {enter6();}
+        if (Program[index]=='7') {enter7();}
+	if (Program[index]=='8') {enter8();}
+        if (Program[index]=='9') {enter9();}
+
+	//first line
+	if (Program[index]=='a') {sto();}
+        if (Program[index]=='b') {rcl();}
+        if (Program[index]=='c') {cla();}
+        if (Program[index]=='/') {dividido()}
+	if (Program[index]=='e') {xy();}
+
+        //second and third line
+	if (Program[index]=='*') {vezes();}
+        if (Program[index]=='g') {inverso();}
+        if (Program[index]=='-') {menos();}
+        if (Program[index]=='i') {pm();}
+
+	//4th and 5th
+	if (Program[index]=='+') {mais();}
+        if (Program[index]=='E') {ME();}
+	if (Program[index]=='.') {enterponto();}
+        if (Program[index]=='m') {doc();}
+        if (Program[index]=='R') {enterenter();}
+
+        //first trigonometric line
+        if (Program[index]=='o') {MSin();}
+        if (Program[index]=='p') {MCos();}
+	if (Program[index]=='q') {MTan();}
+        if (Program[index]=='r') {MLog();}
+        if (Program[index]=='s') {MExp();}
+
+        //second trigonometric line
+        if (Program[index]=='t') {MaSin();}
+        if (Program[index]=='u') {MaCos();}
+	if (Program[index]=='v') {MaTan();}
+        if (Program[index]=='w') {MSqrt();}
+        if (Program[index]=='x') {MPow();}
+
+	//first hiperbolic line
+        if (Program[index]=='y') {MSinh();}
+        if (Program[index]=='z') {MCosh();}
+	if (Program[index]=='A') {MTanh();}
+        if (Program[index]=='B') {MPi();}
+        if (Program[index]=='C') {MRoot();}
+
+	//second hiperbolic line
+        if (Program[index]=='D') {MaSinh();}
+        if (Program[index]=='F') {MaCosh();}
+	if (Program[index]=='G') {MaTanh();}
+        if (Program[index]=='H') {IsPrime();}
+        if (Program[index]=='!') {MFact();}
+
+        //last line
+        if (Program[index]=='J') {R2C();}
+        if (Program[index]=='K') {C2R();}
+	if (Program[index]=='L') {MPiSCO();}
+        if (Program[index]=='M') {P2R();}
+        if (Program[index]=='N') {R2P();}
+        if (Program[index]=='O') {SEQT();}
+
+	ProgramPosition=ProgramPosition+1;
+
+	if (ProgramPosition>=n){ProgramPosition=0;}
+   }
+}
+
+function Run()
+{
+	if (running==false) 
+	{
+	   running=true;	   
+           ProgramPosition=0;	
+           for (j = 0; j < Program.length; j=j+1) 
+           { 		  
+             runme();              
+           }
+	    learnIMG.src="learn.png";
+	    running=false;
+	}
+}
+
+
+
+
+</script></head>
+<body onload="MyZoom()" onresize="MyZoom()" style="color: rgb(0, 0, 0); background-color: gray;" alink="#000099" link="#000099" vlink="#990099">
+<form id="linhas">
+<input name="linha5" type="text"  style="width:325px"><br>
+<input name="linha4" type="text"  style="width:325px"><br>
+<input name="linha3" type="text"  style="width:325px"><br>
+<input name="linha2" type="text"  style="width:325px"><br>
+<input name="linha1" type="text"  style="width:325px">
+</form>
+
+<input onclick="sto(); programming('a');" value="ySTOx" type="button" class="btnStyle4">
+<input onclick="rcl(); programming('b');" value="RCLx" type="button" class="btnStyle4">
+<input onclick="cla(); programming('c');" value="CLA" type="button" class="btnStyle1">
+<input onclick="dividido(); programming('/');" value="/" type="button" class="btnStyle1">
+<input onclick="xy(); programming('e');" value="x&lt;&gt;y" type="button" class="btnStyle1">
+
+<br>
+<input onclick="enter7(); programming('7');" value="7" type="button" class="btnStyle1">
+<input onclick="enter8(); programming('8');" value="8" type="button" class="btnStyle1">
+<input onclick="enter9(); programming('9');" value="9" type="button" class="btnStyle1">
+<input onclick="vezes(); programming('*');" value="*" type="button" class="btnStyle1">
+<input onclick="inverso(); programming('g');" value="1/x" type="button" class="btnStyle1">
+
+<br>
+<input onclick="enter4(); programming('4');" value="4" type="button" class="btnStyle1">
+<input onclick="enter5(); programming('5');" value="5" type="button" class="btnStyle1">
+<input onclick="enter6(); programming('6');" value="6" type="button" class="btnStyle1">
+<input onclick="menos(); programming('-');" value="-" type="button" class="btnStyle1">
+<input onclick="pm(); programming('i');" value="&#177;" type="button" class="btnStyle1">
+
+<br>
+<input onclick="enter1(); programming('1');" value="1" type="button" class="btnStyle1">
+<input onclick="enter2(); programming('2');" value="2" type="button" class="btnStyle1">
+<input onclick="enter3(); programming('3');" value="3" type="button" class="btnStyle1">
+<input onclick="mais(); programming('+');" value="+" type="button" class="btnStyle1">
+<input onclick="ME(); programming('E');" value="E" type="button" class="btnStyle1">
+<br>
+<input onclick="enter0(); programming('0');" value="0" type="button" class="btnStyle1">
+<input onclick="enterponto(); programming('.');" value="." type="button" class="btnStyle1">
+<input onclick="doc(); programming('m');" value="C" type="button" class="btnStyle1">
+<input onclick="enterenter(); programming('R');" value="ENTER" type="button" class="btnStyle3">
+<br>
+<input onclick="MSin(); programming('o');" value="sin" type="button" class="btnStyle2">
+<input onclick="MCos(); programming('p');" value="cos" type="button" class="btnStyle2">
+<input onclick="MTan(); programming('q');" value="tan" type="button" class="btnStyle2">
+<input onclick="MLog(); programming('r');" value="ln" type="button" class="btnStyle2">
+<input onclick="MExp(); programming('s');" value="exp" type="button" class="btnStyle2">
+<br>
+<input onclick="MaSin(); programming('t');" value="asin" type="button" class="btnStyle2">
+<input onclick="MaCos(); programming('u');" value="acos" type="button" class="btnStyle2">
+<input onclick="MaTan(); programming('v');" value="atan" type="button" class="btnStyle2">
+<input onclick="MPow(); programming('x');" value="y^x" type="button" class="btnStyle2">
+<input onclick="SEQT(); programming('O');" value="2Eqn" type="button" class="btnStyle2">
+<br>
+<input onclick="MSinh(); programming('y');" value="sinh" type="button" class="btnStyle2">
+<input onclick="MCosh(); programming('z');" value="cosh" type="button" class="btnStyle2">
+<input onclick="MTanh(); programming('A');" value="tanh" type="button" class="btnStyle2">
+<input onclick="MPi(); programming('B');" value="&pi;" type="button" class="btnStyle2">
+<input onclick="MRoot(); programming('C');" value="x&#8730;y" type="button" class="btnStyle2">
+<br>
+<input onclick="MaSinh(); programming('D');" value="asinh" type="button" class="btnStyle2">
+<input onclick="MaCosh(); programming('F');" value="acosh" type="button" class="btnStyle2">
+<input onclick="MaTanh(); programming('G');" value="atanh" type="button" class="btnStyle2">
+<input onclick="IsPrime(); programming('H');" value="IsPrime" type="button" class="btnStyle2">
+<input onclick="MFact(); programming('!');" value="!" type="button" class="btnStyle2">
+<br>
+<input onclick="R2C(); programming('J');" value="R2C" type="button" class="btnStyle2">
+<input onclick="C2R(); programming('K');" value="C2R" type="button" class="btnStyle2">
+<input onclick="MPiSCO(); programming('L');" value="&pi;/180" type="button" class="btnStyle2">
+<input onclick="P2R(); programming('M');" value="P2R" type="button" class="btnStyle2">
+<input onclick="R2P(); programming('N');" value="R2P" type="button" class="btnStyle2">
+<br>
+
+<img id="learnIMG" src="learn.png" height="15" width="63"  onclick="learn()">
+<img id="runIMG"   src="run.png" height="15" width="63"  onclick="Run()">
+
+</body></html>
