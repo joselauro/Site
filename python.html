@@ -5,7 +5,7 @@
 	<title></title>
 	<meta name="generator" content="LibreOffice 25.8.1.1 (Windows)"/>
 	<meta name="created" content="2025-09-11T17:08:33.327012900"/>
-	<meta name="changed" content="2025-09-21T16:51:14.526641700"/>
+	<meta name="changed" content="2025-09-25T21:02:34.322778300"/>
 	<style type="text/css">
 		a:visited { color: #383838 }
 	</style>
@@ -22,74 +22,42 @@ em Python 3</b></font></font></p>
 <p style="margin-bottom: 0cm"><br/>
 
 </p>
-<p style="margin-bottom: 0cm"><br/>
 
 </p>
-<p style="margin-bottom: 0cm"><b>integral definida.</b></p>
-<p style="margin-bottom: 0cm"><br/>
+<p style="margin-bottom: 0cm"><a href="python/1.py.html">1.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/2.py">2.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/3.py">3.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/4.py">4.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/5.py">5.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/6.py">6.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/7.py">7.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/8.py">8.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/9.py">9.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/10.py">10.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/11.py">11.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/12.py">12.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/13.py">13.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/14.py">14.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/15.py">15.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/16.py">16.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/17.py">17.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/18.py">18.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/19.py">19.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/20.py">20.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/21.py">21.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/22.py">22.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/23.py">23.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/24.py">24.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/25.py">25.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/26.py">26.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/27.py">27.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/28.py">28.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/29.py">29.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/30.py">30.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/31.py">31.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/32.py">32.py</a></p>
+<p style="margin-bottom: 0cm"><a href="python/33.py">33.py</a></p>
 
-</p>
-<p style="margin-bottom: 0cm">import math<br/>
-        <br/>
-def f
-(x):<br/>
-    result=x*math.sin(x**2)<br/>
-    return result<br/>
-   
-<br/>
-dx=0.0001<br/>
-integ=0.0<br/>
-x=0.0001  <br/>
-while x&lt;1:<br/>
 
-   integ=integ+f(x)*dx<br/>
-    x=x+dx<br/>
-<br/>
-print(integ)</p>
-<p style="margin-bottom: 0cm"><br/>
-
-</p>
-<p style="margin-bottom: 0cm"><br/>
-
-</p>
-<p style="margin-bottom: 0cm"><b>Imtegral definida, melhorado.</b></p>
-<p style="margin-bottom: 0cm"><br/>
-
-</p>
-<p style="margin-bottom: 0cm">import math<br/>
-<br/>
-def polylog(x):<br/>
-
-   soma=0<br/>
-    for k in range(1,10000):<br/>
-       
-soma=soma+x**k/k**2<br/>
-    return soma<br/>
-        <br/>
-def f
-(x):<br/>
-    resu=math.log(1-x)*polylog(1-x**0.5)/x<br/>
-    return
-resu<br/>
-<br/>
-<br/>
-a = 0.0001<br/>
-b = 1<br/>
-<br/>
-<br/>
-n =
-1_000_000<br/>
-dx = (b - a) / n<br/>
-<br/>
-integ = 0.5 * (f(a) +
-f(b))<br/>
-for i in range(1, n):<br/>
-    x = a + i * dx<br/>
-   
-integ += f(x)<br/>
-integ *= dx<br/>
-<br/>
-print(integ) 
-</p>
 </body>
 </html>
