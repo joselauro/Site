@@ -2,7 +2,7 @@
 <html><head>
 
 <style media="screen" type="text/css">
-    .btnStyle1 { width:63px;height:54px; border: 1px #2E6DA4 solid;
+    .btnStyle1 { width:67px;height:54px; border: 1px #2E6DA4 solid;
    -moz-border-radius: 8px;
    -webkit-border-radius: 8px;
    border-radius: 8px;
@@ -11,44 +11,59 @@
    color: #FFFFFF;
    font-size: 16px;
     }
-    .btnStyle2 { width:63px;height:25px;
+    .btnStyle2 { width:47px;height:25px;
      background-color: #3370B7;
      background-image: none;
-     color: #FFFFFF;}
-    .btnStyle3 { width:130px;height:54px;
-     border: 1px #2E6DA4 solid;
-   -moz-border-radius: 8px;
+     color: #FFFFFF;
+     font-size: 11px;
+    }
+     
+    .btnStyle3 { width:140px;height:54px;  border: 1px #2E6DA4 solid;
+      background-color: #3370B7;
+     -moz-border-radius: 8px;
    -webkit-border-radius: 8px;
    border-radius: 8px;
-   background-color: #3370B7;
    background-image: none;
    color: #FFFFFF;
-   font-size: 16px;
+   }
+    .btnStyle4 { width:47px;height:25px;
+     background-color: #009900;
+     background-image: none;
+     color: #FFFFFF;
+     font-size: 11px;
+
     }
-     .btnStyle4 { width:63px;height:54px; border: 1px #2E6DA4 solid;
-   -moz-border-radius: 8px;
-   -webkit-border-radius: 8px;
-   border-radius: 8px;
-   background-color: #3370B7;
-   background-image: none;
-   color: #FFFFFF;
-   font-size: 11px;
+
+     .btnStyle5 { width:47px;height:25px;
+     background-color: #007700;
+     background-image: none;
+     color: #FFFFFF;
+     font-size: 11px;
+
     }
+
 </style>
 <script>
 
 var
   Memory = [];
   MemoryInternal = [];
-  Stack = ["","","","","","","","","","","","","",""];
+  Stack = ["","","","","","","","","","","","","","","","","","","","","","","","","","","",""];
   edicao=true;
   novo=false;
   Zoom=90;
   Eativo=false;
   learning=false;
+  arc=false;
+  hyper=false;
   Program="";
   ProgramPosition=0;
   running=false;
+  lblactive=false;
+  gotoactive=false;
+  mantissa="";
+  potencia="";
+
 
 /////////////////////////////////////////////////////////////////
 //Primitive complex functions
@@ -268,6 +283,9 @@ function SQRT(z)
 function POWER(z1,z2)
 {
 //returns z1^z2
+if (z1==0 && z2!=0) { return "0";} 
+if (z1==0 && z2==0) { return "Invalid Data";} 
+
 return rounder(EXP(TWOIMPUTS("*",z2,LOG(z1))));	
 }
 
@@ -346,57 +364,21 @@ function NEG(z)
 
 ///////////////////////////////
 //Other functions
-///////////////////////////
+///////////////////////////////
 
-
-function gamma(z)
-{
- //This function is not working!	
- 
- var c= new Array;
- //This implements the Spouge's approximation for gamma function with a=12.
-
- zz=TWOIMPUTS("-","1",z);
-
- //calculation of the parameters
- c[0]=Math.sqrt(2*Math.acos(-1)).toString();
- 
-
- for (k = 1; k < 12; k++)
- {
-    c[k]=(Math.pow(-1,k-1)*Math.pow(-k+12,k-0.5)*Math.exp(-k+12)/fact(k-1)).toString();
- }
-
- //calculation of the summation
- summ=c[0];
-
- for (k = 1; k < 12; k++)
- {  
-    temp=TWOIMPUTS("/",TWOIMPUTS("+",zz,k.toString()),c[k]);	 
-    summ=TWOIMPUTS("+",summ,temp);
- }
-
-
- //final calculation
- 
- result=POWER(TWOIMPUTS("+",zz,"12"),TWOIMPUTS("+",zz,"0.5"));
- result=TWOIMPUTS("*",result,summ);
- result=TWOIMPUTS("*",result,EXP(TWOIMPUTS("-","12",NEG(zz))));
- return result; 
-}   
 
 
 function MyZoom() {
     var w = window.innerWidth;
     var h = window.innerHeight;
 
-    zoomw=w/355;
-    zoomh=h/535;
+    zoomw=w/360;
+    zoomh=h/540;
 
      if (window.matchMedia("(orientation: portrait)").matches) {
      // you're in PORTRAIT mode 
-      zoomh=w/355;
-      zoomw=h/535;}
+      zoomh=w/360;
+      zoomw=h/540;}
 
     if (zoomw>zoomh){
         Zoom=zoomh*100;
@@ -417,6 +399,7 @@ function LitleHelp()
 }
 function R2C()
 {
+  if (learning==false){	
    linhas.linha1.value=linhas.linha2.value+" i"+linhas.linha1.value;
    linhas.linha2.value=linhas.linha3.value;
    linhas.linha3.value=linhas.linha4.value;
@@ -427,10 +410,12 @@ function R2C()
      Stack[irc]=Stack[irc+1];
     }
     Stack[1000]="";
-   edicao=false;  
+   edicao=false; 
+   }
 }
 function C2R()
 {
+    if (learning==false){	
     img="0";
     x=linhas.linha1.value.indexOf("i");
     real=linhas.linha1.value.substr(0, x-1);
@@ -443,6 +428,7 @@ function C2R()
     }
     
     edicao=false; 
+    }
 }
 
 function fact(n)
@@ -457,21 +443,81 @@ function fact(n)
 	   }
 }
 
+
+function gamma(z)
+{	
+ 
+ var c= new Array;
+
+ //This implements the Spouge's approximation for gamma function.
+ //Not complex.		
+
+ //The coefficients with a=12 
+ c[0]=2.5066282746310002;
+ c[1]=1.9858006271387744E5;
+ c[2]=-6.9653800715380255E5;
+ c[3]=9.8452469720040984E5;
+ c[4]=-7.1948138054635690E5;
+ c[5]=2.9026275410926086E5;
+ c[6]=-6.4035016015929265E4;
+ c[7]=7.2018644207650295E3;
+ c[8]=-3.5497463894564873E2;
+ c[9]=5.6610056376747249;
+ c[10]=-1.4743849521331018E-2;
+ c[11]=7.4908560087605973E-7; 
+
+
+
+
+ //calculation of the summation
+ summ=c[0];
+ 
+ for (k = 1; k < 12; k++) 
+ {
+    summ=summ+c[k]/(z+k);
+ }
+
+  //final calculation
+  result=Math.pow(z+12,z+0.5)*Math.exp(-z-12)*summ; 
+
+  return result; 
+
+  }   
+
+
 function MFact()
 {
-    linhas.linha1.value=(fact(parseInt(linhas.linha1.value))).toString();
-    novo=true;
-    edicao=false;
-    Eativo=false;
+    if (learning==false){	
+	n=parseFloat(linhas.linha1.value)-parseInt(linhas.linha1.value);
+   	if (n!=0) {
+	   alert("Invalid Data");
+	}
+        else
+        {
+         linhas.linha1.value=(fact(parseFloat(linhas.linha1.value))).toString();
+         LitleHelp();
+	}
+    }
+}
+
+function Mgamma()
+{
+    if (learning==false){	
+    linhas.linha1.value=(gamma(parseFloat(linhas.linha1.value)-1.0)).toString();
+    LitleHelp();
+    }
 }	
+
 
 
 function IsPrime()
 {
+if (learning==false){	
+
   num=parseInt(linhas.linha1.value);
   divisor=3;
   root=Math.sqrt(num);
-
+  
   if (num/2-Math.floor(num/2)==0)
   {
    alert("This number is divisible by 2");
@@ -491,14 +537,14 @@ function IsPrime()
      alert("This number is prime.");
    }
   }
-   novo=true;
-   edicao=false;
-   Eativo=false;
+  LitleHelp();
+}
 }
 
 
 function MRoot()
 {
+ if (learning==false){	
     linhas.linha1.value=POWER(linhas.linha2.value,INV(linhas.linha1.value));
     linhas.linha2.value=linhas.linha3.value;
     linhas.linha3.value=linhas.linha4.value;
@@ -510,10 +556,12 @@ function MRoot()
     }
     Stack[1000]="";
     LitleHelp();
+  }
 }  
 
 function MPow()
 {
+  if (learning==false){	
     x1=linhas.linha1.value.indexOf("i");
     x2=linhas.linha2.value.indexOf("i");
     if ((x1==-1)&&(x2==-1)&&(parseFloat(linhas.linha2.value)>0)){ 
@@ -521,8 +569,8 @@ function MPow()
 	 //This non-complex version is to avoid stupid things like 5^2=24.999999999999996.
 
     }
-    else
-         linhas.linha1.value=POWER(linhas.linha2.value,linhas.linha1.value);
+	else {
+		linhas.linha1.value=POWER(linhas.linha2.value,linhas.linha1.value);}
 
     linhas.linha2.value=linhas.linha3.value;
     linhas.linha3.value=linhas.linha4.value;
@@ -530,28 +578,57 @@ function MPow()
     linhas.linha5.value=Stack[6];
     for(irc=6;irc<1000;irc++)
     {
-     Stack[i]=Stack[i+1];
+     Stack[irc]=Stack[irc+1];
     }
     Stack[1000]="";
     LitleHelp();
+  }
 }  
 
 function MSqrt()
 {
-    linhas.linha1.value=SQRT(linhas.linha1.value);
+   if (learning==false){	
+    img="0";
+    x=linhas.linha1.value.indexOf("i");
+
+
+    if (x==-1&&(parseFloat(linhas.linha1.value))<0) // número real negativo
+    {
+     linhas.linha1.value=POWER(linhas.linha1.value,INV("2"));
+     LitleHelp();
+     C2R();
+     linhas.linha2.value="0"; //a raiz é imaginária pura.
+     R2C();
+    }
+    
+    else
+    {
+    linhas.linha1.value=POWER(linhas.linha1.value,INV("2"));
     LitleHelp();
+    }
+   }
 }  
 
 function MLog()
 {
-    linhas.linha1.value=LOG(linhas.linha1.value);
+  if (learning==false){	
+    if (parseFloat(linhas.linha1.value)==0) {
+       linhas.linha1.value="Invalid Data";
+    }
+    else
+       linhas.linha1.value=LOG(linhas.linha1.value);
     LitleHelp();
+   }
 }  
+
 function MExp()
 {
+  if (learning==false){		
     linhas.linha1.value=EXP(linhas.linha1.value);
     LitleHelp();
+  }
 }  
+
 
 function MSin()
 {   
@@ -569,6 +646,8 @@ function MSin()
     }
     LitleHelp();
 }  
+
+
 function MCos()
 { 
     z=linhas.linha1.value;
@@ -585,6 +664,9 @@ function MCos()
     }
     LitleHelp();
 }  
+
+
+
 function MTan()
 {   z=linhas.linha1.value;
     x1=z.indexOf("i");
@@ -606,6 +688,7 @@ function MTan()
 
 function SEQT()
 {
+ if (learning==false){		
  enterenter();	
  enter3();
  stoInternal(); 
@@ -662,6 +745,18 @@ function SEQT()
  enter1();
  rclInternal(); 
  dividido();
+
+ linhas.linha3.value=linhas.linha4.value;
+ linhas.linha4.value=linhas.linha5.value;
+ linhas.linha5.value=Stack[6];
+ for(irc=6;irc<1000;irc++)
+ {
+  Stack[irc]=Stack[irc+1];
+ }
+ Stack[1000]="";
+ LitleHelp();
+    }
+
 }
 
 
@@ -773,8 +868,122 @@ function MaTanh()
     LitleHelp();
 } 
 
+
+function Marc()
+{
+if (learning==false){	
+
+
+  if (arc==true)
+  {
+     arc=false;
+  }
+  else
+  {
+     arc=true;
+  }
+  }
+}
+
+
+function Mhyper()
+{
+ if (learning==false){	
+  if (hyper==true)
+  {
+     hyper=false;
+     }
+  else
+  {
+     hyper=true;
+  }
+ }
+}
+
+
+
+
+function RSin()
+{
+if (hyper==false && arc==false && learning==false)
+ {
+   MSin();
+ }
+else if (hyper==false && arc==true && learning==false)
+ {
+   MaSin();
+   arc=false;
+ }
+else if (hyper==true && arc==false && learning==false)
+ {
+   MSinh();
+   hyper=false;	
+ }
+else if (hyper==true && arc==true && learning==false)
+ {
+   MaSinh();
+   hyper=false;
+   arc=false;
+ }
+}
+
+
+
+function RCos()
+{
+if (hyper==false && arc==false && learning==false)
+ {
+   MCos();
+ }
+else if (hyper==false && arc==true && learning==false)
+ {
+   MaCos();
+   arc=false;
+ }
+else if (hyper==true && arc==false && learning==false)
+ {
+   MCosh();
+   hyper=false;	
+ }
+else if (hyper==true && arc==true && learning==false)
+ {
+   MaCosh();
+   hyper=false;
+   arc=false;
+ }
+}
+
+
+function RTan()
+{
+if (hyper==false && arc==false && learning==false)
+ {
+   MTan();
+ }
+else if (hyper==false && arc==true && learning==false)
+ {
+   MaTan();
+   arc=false;
+ }
+else if (hyper==true && arc==false && learning==false)
+ {
+   MTanh();
+   hyper=false;	
+ }
+else if (hyper==true && arc==true && learning==false)
+ {
+   MaTanh();
+   hyper=false;
+   arc=false;
+ }
+}
+
+
+
+
+
 function sto()
-{   
+{   if (learning==false){	
       Memory[Math.floor(parseInt(linhas.linha1.value))]=linhas.linha2.value;
       linhas.linha1.value=linhas.linha2.value;
       linhas.linha2.value=linhas.linha3.value;
@@ -786,7 +995,8 @@ function sto()
        Stack[irc]=Stack[irc+1];
       }
       Stack[1000]="";
-      LitleHelp();		      		      
+      LitleHelp();
+    }
 }  
 
 function stoInternal()
@@ -807,58 +1017,82 @@ function stoInternal()
 
 function rcl()
 {
+ if (learning==false){	
+
       linhas.linha1.value=Memory[Math.floor(parseInt(linhas.linha1.value))];
       LitleHelp();
+ }
 }  
 
 function rclInternal()
 {
+ if (learning==false){	
+
       linhas.linha1.value=MemoryInternal[Math.floor(parseInt(linhas.linha1.value))];
       LitleHelp();
+  }
 }  
 
 function MPi()
 {
+ if (learning==false){	
     if (novo==false)
 	{
-	  enterenter();
+	   enterenter();
 	}
-	
     EntraNumeral((Math.PI).toString());
     LitleHelp();
+ }
 }  
 
-function MPiSCO()
+function MPi180()
 {
+ if (learning==false){	
+ 
     if (novo==false)
 	{
-	  enterenter();
+	   enterenter();
 	}
-	
+
     EntraNumeral((Math.PI/180).toString());
     LitleHelp();
+  }
 }	
 
 function pm()
 {
+  if (learning==false){	
+
    if (Eativo==false)
    {	
     linhas.linha1.value=NEG(linhas.linha1.value);
    }
    else
    {
+    if (potencia!="")
+    { potencia=potencia*(-1);
+     linhas.linha1.value=mantissa+'e'+potencia;
+    }
+    else
+    {
+    potencia="-";
     linhas.linha1.value=linhas.linha1.value+"-";
-    Eativo=false;
+    }
    }
+  
+ }
 }  
   
 
 function xy()
 {
+  if (learning==false){	
     temp=linhas.linha2.value;
     linhas.linha2.value=linhas.linha1.value;
     linhas.linha1.value=temp;
     Eativo=false;
+    edicao=false;
+   }
 }  
 
 //Script created by Jose Lauro Strapasson.
@@ -870,27 +1104,29 @@ function dividido(){TwoImputs("/")};
 
 
 function TwoImputs(kind)
-{
-    z1=linhas.linha1.value;
-    z2=linhas.linha2.value;
+{ 
+    if (learning==false){	
+     z1=linhas.linha1.value;
+     z2=linhas.linha2.value;
 
-    linhas.linha1.value=TWOIMPUTS(kind,z1,z2);
-    linhas.linha2.value=linhas.linha3.value;
-    linhas.linha3.value=linhas.linha4.value;
-    linhas.linha4.value=linhas.linha5.value;
-    linhas.linha5.value=Stack[6];
-    for(irc=6;irc<1000;irc++)
-    {
-     Stack[irc]=Stack[irc+1];
+     linhas.linha1.value=TWOIMPUTS(kind,z1,z2);
+     linhas.linha2.value=linhas.linha3.value;
+     linhas.linha3.value=linhas.linha4.value;
+     linhas.linha4.value=linhas.linha5.value;
+     linhas.linha5.value=Stack[6];
+     for(irc=6;irc<1000;irc++)
+     {
+      Stack[irc]=Stack[irc+1];
+     }
+     Stack[1000]="";
+     LitleHelp();
     }
-    Stack[1000]="";
-
-    LitleHelp();
 }
 	
 
 function R2P()
 {
+ if (learning==false){	
     x=linhas.linha2.value; 
     y=linhas.linha1.value; 
 
@@ -899,45 +1135,46 @@ function R2P()
 
     linhas.linha1.value=theta.toString();
     linhas.linha2.value=r.toString();
-    edicao=false;
-    novo=true;
-    Eativo=false;
+    LitleHelp();
+  }
 }
 
 
 function P2R()
 {
-    theta=linhas.linha1.value;
-    r=linhas.linha2.value;
-
-    x=parseFloat(r)*Math.cos(parseFloat(theta));
-    y=parseFloat(r)*Math.sin(parseFloat(theta));
-
-
-    linhas.linha1.value=y.toString();
-    linhas.linha2.value=x.toString();
-
-    edicao=false;
-    novo=true;
-    Eativo=false;
+    if (learning==false){	
+     theta=linhas.linha1.value;
+     r=linhas.linha2.value;
+     x=parseFloat(r)*Math.cos(parseFloat(theta));
+     y=parseFloat(r)*Math.sin(parseFloat(theta));
+     linhas.linha1.value=y.toString();
+     linhas.linha2.value=x.toString();
+     LitleHelp();
+    }
 }
 
 
 
 function inverso()
 {
-    linhas.linha1.value=INV(linhas.linha1.value)
-    LitleHelp();
+    if (learning==false){	
+     linhas.linha1.value=INV(linhas.linha1.value)
+     LitleHelp();
+    }
 }
 
 function GAMMA()
 {
-    linhas.linha1.value=gamma(linhas.linha1.value);
-    LitleHelp();
+    if (learning==false){	
+     linhas.linha1.value=gamma(linhas.linha1.value);
+     LitleHelp();
+    }
 }
 
 function doc()
-{	
+{
+   if (learning==false){	
+
     if (linhas.linha1.value=='')
     {   
       linhas.linha1.value=linhas.linha2.value;
@@ -957,13 +1194,13 @@ function doc()
       linhas.linha1.value="";
       Eativo=false;
     }
-   
-
-
+   }
 }
 
+
 function cla()
-{   
+{  
+  if (learning==false){	  
     for(irc=6;irc<=1000;irc++)
     {
      Stack[irc]="";
@@ -973,10 +1210,41 @@ function cla()
     linhas.linha3.value="";
     linhas.linha2.value="";
     doc();
+   }
 }
+
+
+function IP()
+{
+  if (learning==false){	
+   z=linhas.linha1.value;
+   if (z>=0) {
+   output=Math.floor(z);
+   }
+   else
+   {
+   output=Math.ceil(z);
+   }
+   
+   linhas.linha1.value=output.toString();
+   LitleHelp();
+  }
+}
+
+function FP()
+{
+ if (learning==false){		
+   enterenter()
+   IP();
+   menos();
+ }	 
+}
+
+
 
 function enterenter()
 {
+  if (learning==false){	
     for(irc=1000;irc>6;irc--)
     {
      Stack[irc]=Stack[irc-1];
@@ -989,16 +1257,150 @@ function enterenter()
     edicao=true;
     novo=true;
     Eativo=false;
+  }
 }
   
 
 function EntraNumeral(Numeral)
 {
-  if(edicao==true)
+   if (learning==true && gotoactive==true && Numeral=='.')
+   {
+     var i;
+     for (i = 0; i < Program.length; i++)
+     {
+       MoveDOWN();
+     }
+   }
+	
+   if (learning==true && gotoactive==true && Numeral!='.')
+   {
+	  if (Numeral=='0') {
+		   ncode='Á';
+	  }
+	  if (Numeral=='1') {
+		   ncode='À';
+	  }
+	  if (Numeral=='2') {
+		   ncode='Â';
+	  }
+	  if (Numeral=='3') {
+		   ncode='Ã';
+	  }
+	  if (Numeral=='4') {
+		   ncode='É';
+	  }
+	  if (Numeral=='5') {
+		   ncode='È';
+	  }
+	  if (Numeral=='6') {
+		   ncode='Ê';
+	  }
+	  if (Numeral=='7') {
+		   ncode='Í';
+	  }
+	  if (Numeral=='8') {
+		   ncode='Ì';
+	  }
+	  if (Numeral=='9') {
+	           ncode='Î';
+	  }
+	
+	Program=Program+ncode;
+	ProgramPosition=ProgramPosition+1;
+	linhas.linhaP.value=Program;
+
+	linhas.linha5.value=linhas.linha4.value;
+	linhas.linha4.value=linhas.linha3.value;
+	linhas.linha3.value=linhas.linha2.value;
+	linhas.linha2.value=linhas.linha1.value;
+
+
+	if (ncode=='Á') {linhas.linha1.value='GOTO 0';}
+	if (ncode=='À') {linhas.linha1.value='GOTO 1';}
+	if (ncode=='Â') {linhas.linha1.value='GOTO 2';}
+	if (ncode=='Ã') {linhas.linha1.value='GOTO 3';}
+	if (ncode=='É') {linhas.linha1.value='GOTO 4';}
+	if (ncode=='È') {linhas.linha1.value='GOTO 5';}
+	if (ncode=='Ê') {linhas.linha1.value='GOTO 6';}
+	if (ncode=='Í') {linhas.linha1.value='GOTO 7';}
+	if (ncode=='Ì') {linhas.linha1.value='GOTO 8';}
+	if (ncode=='Î') {linhas.linha1.value='GOTO 9';}
+
+        linhas.linha1.value=ProgramPosition+' '+linhas.linha1.value;
+	gotoactive=false;
+
+
+  }   
+
+  else if (learning==true && lblactive==true)
+  {
+	  if (Numeral=='0') {
+		   ncode='á';
+	  }
+	  if (Numeral=='1') {
+		   ncode='à';
+	  }
+	  if (Numeral=='2') {
+		   ncode='â';
+	  }
+	  if (Numeral=='3') {
+		   ncode='ã';
+	  }
+	  if (Numeral=='4') {
+		   ncode='é';
+	  }
+	  if (Numeral=='5') {
+		   ncode='è';
+	  }
+	  if (Numeral=='6') {
+		   ncode='ê';
+	  }
+	  if (Numeral=='7') {
+		   ncode='í';
+	  }
+	  if (Numeral=='8') {
+		   ncode='ì';
+	  }
+	  if (Numeral=='9') {
+	           ncode='î';
+	  }
+	
+	Program=Program+ncode;
+	ProgramPosition=ProgramPosition+1;
+	linhas.linhaP.value=Program;
+
+	linhas.linha5.value=linhas.linha4.value;
+	linhas.linha4.value=linhas.linha3.value;
+	linhas.linha3.value=linhas.linha2.value;
+	linhas.linha2.value=linhas.linha1.value;
+
+
+	if (ncode=='á') {linhas.linha1.value='LBL 0';}
+	if (ncode=='à') {linhas.linha1.value='LBL 1';}
+	if (ncode=='â') {linhas.linha1.value='LBL 2';}
+	if (ncode=='ã') {linhas.linha1.value='LBL 3';}
+	if (ncode=='é') {linhas.linha1.value='LBL 4';}
+	if (ncode=='è') {linhas.linha1.value='LBL 5';}
+	if (ncode=='ê') {linhas.linha1.value='LBL 6';}
+	if (ncode=='í') {linhas.linha1.value='LBL 7';}
+	if (ncode=='ì') {linhas.linha1.value='LBL 8';}
+	if (ncode=='î') {linhas.linha1.value='LBL 9';}
+
+        linhas.linha1.value=ProgramPosition+' '+linhas.linha1.value;
+	lblactive=false;
+
+  }   
+
+  else if(edicao==true&&learning==false)
   {	  
     if(novo==false)
-     {
-      linhas.linha1.value=linhas.linha1.value + Numeral;	
+     { if (Eativo==false){
+	     linhas.linha1.value=linhas.linha1.value + Numeral;	}
+       else
+	{
+	potencia=potencia+Numeral;
+	linhas.linha1.value=mantissa +'e'+potencia;
+	}
       }
     else
      {
@@ -1006,7 +1408,7 @@ function EntraNumeral(Numeral)
        novo=false;	
      }
   }
-  else
+  else if (learning==false)
    {		   
      for(irc=1000;irc>6;irc--)
      {
@@ -1024,14 +1426,22 @@ function EntraNumeral(Numeral)
   }
 }         
 
-function enterponto(){ EntraNumeral('.'); }
+
+
+
+
 function ME(){ 
     if (Eativo==false)
     {	    
-	EntraNumeral('e');
+	//EntraNumeral('e');
 	Eativo=true;
+	mantissa=linhas.linha1.value;
+        linhas.linha1.value=linhas.linha1.value+"e";
+	potencia="";
     }
 }
+
+function enterponto(){ EntraNumeral('.'); }
 function enter0(){ EntraNumeral('0');}
 function enter1(){ EntraNumeral('1');}
 function enter2(){ EntraNumeral('2');}
@@ -1044,13 +1454,165 @@ function enter8(){ EntraNumeral('8');}
 function enter9(){ EntraNumeral('9');} 
 
 
+////////////////////////////////////////
+///// Rotinas de programação.
+////////////////////////////////////////
+
+
+function xmy()
+{
+
+//Se sim roda a linha seguinte, se não pula.
+ 
+  if (parseFloat(linhas.linha1.value)>=parseFloat(linhas.linha2.value))
+  {
+    ProgramPosition=ProgramPosition+1;
+  }	  
+ }
+
+function xeq0()
+{
+	if (parseFloat(linhas.linha1.value)!=0)
+  {
+    ProgramPosition=ProgramPosition+1;
+  }	  
+}
+
+
+function showprogramcode0(ncode)
+
+{
+	if (ncode=='0') {linhas.linha1.value='0';}
+        if (ncode=='1') {linhas.linha1.value='1';}
+        if (ncode=='2') {linhas.linha1.value='2';}
+        if (ncode=='3') {linhas.linha1.value='3';}
+	if (ncode=='4') {linhas.linha1.value='4';}
+        if (ncode=='5') {linhas.linha1.value='5';}
+        if (ncode=='6') {linhas.linha1.value='6';}
+        if (ncode=='7') {linhas.linha1.value='7';}
+	if (ncode=='8') {linhas.linha1.value='8';}
+        if (ncode=='9') {linhas.linha1.value='9';} 
+
+	if (ncode=='a') {linhas.linha1.value='ySTOx'}
+        if (ncode=='b') {linhas.linha1.value='RCLx';}
+        if (ncode=='c') {linhas.linha1.value='CLA';}
+        if (ncode=='d') {linhas.linha1.value='/'}
+	if (ncode=='e') {linhas.linha1.value='xy';}
+
+	if (ncode=='f') {linhas.linha1.value='*';}
+        if (ncode=='g') {linhas.linha1.value='1/x';}
+        if (ncode=='h') {linhas.linha1.value='-';}
+        if (ncode=='i') {linhas.linha1.value='pm';}
+	if (ncode=='j') {linhas.linha1.value='+';}
+
+        if (ncode=='k') {linhas.linha1.value='E';}
+	if (ncode=='l') {linhas.linha1.value='.';}
+        if (ncode=='m') {linhas.linha1.value='C';}
+        if (ncode=='n') {linhas.linha1.value='ENTER';}
+
+        if (ncode=='o') {linhas.linha1.value='sin';}
+        if (ncode=='p') {linhas.linha1.value='cos';}
+	if (ncode=='q') {linhas.linha1.value='tan';}
+        if (ncode=='r') {linhas.linha1.value='ln';}
+        if (ncode=='s') {linhas.linha1.value='exp';}
+	if (ncode=='t') {linhas.linha1.value='arc';}
+
+        if (ncode=='u') {linhas.linha1.value='Root';}
+        if (ncode=='v') {linhas.linha1.value='y^x';}
+        if (ncode=='w') {linhas.linha1.value='hyp';}
+        if (ncode=='x') {linhas.linha1.value='2Eqn';}
+        if (ncode=='y') {linhas.linha1.value='P2R';}
+        if (ncode=='z') {linhas.linha1.value='R2P';}
+
+        if (ncode=='A') {linhas.linha1.value='Pi';}
+        if (ncode=='B') {linhas.linha1.value='x Root y';}
+	if (ncode=='C') {linhas.linha1.value='IP';}
+	if (ncode=='D') {linhas.linha1.value='R2C';}
+        if (ncode=='E') {linhas.linha1.value='C2R';}
+	if (ncode=='F') {linhas.linha1.value='Pi/180';}
+
+	if (ncode=='G') {linhas.linha1.value='IsPrime';}
+        if (ncode=='H') {linhas.linha1.value='!';}
+        if (ncode=='I') {linhas.linha1.value='FP';}
+	if (ncode=='J') {linhas.linha1.value='gamma';}
+
+        if (ncode=='M') {linhas.linha1.value='x=0?';}
+        if (ncode=='N') {linhas.linha1.value='xly?';}
+	if (ncode=='O') {linhas.linha1.value='STOP';}
+        if (ncode=='P') {linhas.linha1.value='RTN';}
+
+        if (ncode=='á') {linhas.linha1.value='LBL 0';}
+	if (ncode=='à') {linhas.linha1.value='LBL 1';}
+	if (ncode=='â') {linhas.linha1.value='LBL 2';}
+	if (ncode=='ã') {linhas.linha1.value='LBL 3';}
+	if (ncode=='é') {linhas.linha1.value='LBL 4';}
+	if (ncode=='è') {linhas.linha1.value='LBL 5';}
+	if (ncode=='ê') {linhas.linha1.value='LBL 6';}
+	if (ncode=='í') {linhas.linha1.value='LBL 7';}
+	if (ncode=='ì') {linhas.linha1.value='LBL 8';}
+	if (ncode=='î') {linhas.linha1.value='LBL 9';}
+
+	if (ncode=='Á') {linhas.linha1.value='GOTO 0';}
+	if (ncode=='À') {linhas.linha1.value='GOTO 1';}
+	if (ncode=='Â') {linhas.linha1.value='GOTO 2';}
+	if (ncode=='Ã') {linhas.linha1.value='GOTO 3';}
+	if (ncode=='É') {linhas.linha1.value='GOTO 4';}
+	if (ncode=='È') {linhas.linha1.value='GOTO 5';}
+	if (ncode=='Ê') {linhas.linha1.value='GOTO 6';}
+	if (ncode=='Í') {linhas.linha1.value='GOTO 7';}
+	if (ncode=='Ì') {linhas.linha1.value='GOTO 8';}
+	if (ncode=='Î') {linhas.linha1.value='GOTO 9';}
+
+
+}
+
+
+function showprogramcode(ncode)
+
+{
+
+         for(irc=1000;irc>6;irc--)
+         {
+           Stack[irc]=Stack[irc-1];
+         }	   
+         Stack[6]=linhas.linha5.value;	
+
+        linhas.linha5.value=linhas.linha4.value;
+        linhas.linha4.value=linhas.linha3.value;
+        linhas.linha3.value=linhas.linha2.value;
+        linhas.linha2.value=linhas.linha1.value;
+        showprogramcode0(ncode);
+        linhas.linha1.value=ProgramPosition+' '+linhas.linha1.value;
+
+}
+
+
+function showprogramcode1(ncode)
+
+{
+        showprogramcode0(ncode);
+        linhas.linha1.value=ProgramPosition+' '+linhas.linha1.value;
+
+}
+
+
+
 function programming(ncode)
 {
-if (learning==true)
+
+if (learning==true && lblactive==false && gotoactive==false)
    {	
-	Program=Program+ncode;
+	temp=Program.slice(ProgramPosition,Program.length);   
+	Program=Program.slice(0,ProgramPosition);   
+        Program=Program+ncode+temp;
+	ProgramPosition=ProgramPosition+1;
+	linhas.linhaP.value=Program;
+	showprogramcode(ncode);
+        linhas.linhaP.value=Program;
    }
+
 }	
+
 
 
 function learn()
@@ -1058,18 +1620,59 @@ function learn()
   running=false;	
   if (learning==false)
   {	  
-    learning=true;
-    Program="";
-    learnIMG.src="learn2.png";
+
+    for(irc=6;irc<1000;irc++)
+     {
+       Stack[irc]="";
+     }	   
+    
+
+    learning=true;   
+    Program= linhas.linhaP.value;
+    ProgramPosition=0;
+    if (Program!='')
+    {
+     MoveDOWN();	
+    }
 
   }
   else
   
   {	  
     learning=false;
-    learnIMG.src="learn.png";
+    cla();
   }  
 }	
+
+
+function STOP()
+{
+ running=false;	
+}
+
+
+function RTN()
+{
+ ProgramPosition=LastGOTO-1;
+
+ //One level subroutines.
+}
+
+
+
+function doLBL()
+{
+lblactive=true;
+gotoactive=false;
+}
+
+
+function doGOTO()
+{
+gotoactive=true;
+lblactive=false;
+}
+
 
 
 
@@ -1077,10 +1680,12 @@ function runme()
 {
 learning=false;
 n = Program.length;
-if (ProgramPosition<n)
+if (ProgramPosition<=n)
   {	
       index=ProgramPosition;
- 
+
+     // alert(index+1+": "+Program[index]);
+    
 	if (Program[index]=='0') {enter0();}
         if (Program[index]=='1') {enter1();}
         if (Program[index]=='2') {enter2();}
@@ -1090,162 +1695,332 @@ if (ProgramPosition<n)
         if (Program[index]=='6') {enter6();}
         if (Program[index]=='7') {enter7();}
 	if (Program[index]=='8') {enter8();}
-        if (Program[index]=='9') {enter9();}
+        if (Program[index]=='9') {enter9();} 
 
-	//first line
 	if (Program[index]=='a') {sto();}
         if (Program[index]=='b') {rcl();}
         if (Program[index]=='c') {cla();}
-        if (Program[index]=='/') {dividido()}
+        if (Program[index]=='d') {dividido()}
 	if (Program[index]=='e') {xy();}
 
-        //second and third line
-	if (Program[index]=='*') {vezes();}
+	if (Program[index]=='f') {vezes();}
         if (Program[index]=='g') {inverso();}
-        if (Program[index]=='-') {menos();}
+        if (Program[index]=='h') {menos();}
         if (Program[index]=='i') {pm();}
+	if (Program[index]=='j') {mais();}
 
-	//4th and 5th
-	if (Program[index]=='+') {mais();}
-        if (Program[index]=='E') {ME();}
-	if (Program[index]=='.') {enterponto();}
+        if (Program[index]=='k') {ME();}
+	if (Program[index]=='l') {enterponto();}
         if (Program[index]=='m') {doc();}
-        if (Program[index]=='R') {enterenter();}
+        if (Program[index]=='n') {enterenter();}
 
-        //first trigonometric line
-        if (Program[index]=='o') {MSin();}
-        if (Program[index]=='p') {MCos();}
-	if (Program[index]=='q') {MTan();}
+        if (Program[index]=='o') {RSin();}
+        if (Program[index]=='p') {RCos();}
+	if (Program[index]=='q') {RTan();}
         if (Program[index]=='r') {MLog();}
         if (Program[index]=='s') {MExp();}
+	if (Program[index]=='t') {Marc();}
 
-        //second trigonometric line
-        if (Program[index]=='t') {MaSin();}
-        if (Program[index]=='u') {MaCos();}
-	if (Program[index]=='v') {MaTan();}
-        if (Program[index]=='w') {MSqrt();}
-        if (Program[index]=='x') {MPow();}
 
-	//first hiperbolic line
-        if (Program[index]=='y') {MSinh();}
-        if (Program[index]=='z') {MCosh();}
-	if (Program[index]=='A') {MTanh();}
-        if (Program[index]=='B') {MPi();}
-        if (Program[index]=='C') {MRoot();}
+        if (Program[index]=='u') {MSqrt();}
+        if (Program[index]=='v') {MPow();}
+        if (Program[index]=='w') {Mhyper();}
+        if (Program[index]=='x') {SEQT();}
+        if (Program[index]=='y') {P2R();}
+        if (Program[index]=='z') {R2P();}
 
-	//second hiperbolic line
-        if (Program[index]=='D') {MaSinh();}
-        if (Program[index]=='F') {MaCosh();}
-	if (Program[index]=='G') {MaTanh();}
-        if (Program[index]=='H') {IsPrime();}
-        if (Program[index]=='!') {MFact();}
 
-        //last line
-        if (Program[index]=='J') {R2C();}
-        if (Program[index]=='K') {C2R();}
-	if (Program[index]=='L') {MPiSCO();}
-        if (Program[index]=='M') {P2R();}
-        if (Program[index]=='N') {R2P();}
-        if (Program[index]=='O') {SEQT();}
+        if (Program[index]=='A') {MPi();}
+        if (Program[index]=='B') {MRoot();}
+	if (Program[index]=='C') {IP();}
+	if (Program[index]=='D') {R2C();}
+        if (Program[index]=='E') {C2R();}
+	if (Program[index]=='F') {MPi180();}
 
+	if (Program[index]=='G') {IsPrime();}
+        if (Program[index]=='H') {MFact();}
+        if (Program[index]=='I') {FP();}
+	if (Program[index]=='J') {Mgamma();}
+
+
+       	if (Program[index]=='M') {xeq0();}
+        if (Program[index]=='N') {xmy();}
+	if (Program[index]=='O') {STOP();}
+        if (Program[index]=='P') {RTN();}
+
+	if (Program[index]=='Á') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('á'); 
+	}
+
+	if (Program[index]=='À') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('à'); 
+	}
+
+	if (Program[index]=='Â') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('â'); 
+	}
+
+    	if (Program[index]=='Ã') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('ã'); 
+	}
+
+	if (Program[index]=='É') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('é'); 
+	}
+
+	if (Program[index]=='È') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('è'); 
+	}
+
+	if (Program[index]=='Ê') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('ê'); 
+	}
+
+	  
+	if (Program[index]=='Í') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('í'); 
+	}
+
+	  
+	if (Program[index]=='Ì') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('ì'); 
+	}
+
+	if (Program[index]=='Î') 
+	{
+	    LastGOTO=ProgramPosition+1;
+	    ProgramPosition=Program.indexOf('î'); 
+	}
+  
+ 
 	ProgramPosition=ProgramPosition+1;
 
-	if (ProgramPosition>=n){ProgramPosition=0;}
    }
 }
+
 
 function Run()
 {
 	if (running==false) 
 	{
+          Program=linhas.linhaP.value;
+
 	   running=true;	   
-           ProgramPosition=0;	
-           for (j = 0; j < Program.length; j=j+1) 
-           { 		  
-             runme();              
-           }
-	    learnIMG.src="learn.png";
+           ProgramPosition=0;
+          
+           while (ProgramPosition < Program.length && running==true)
+            { 		  
+             runme();  
+            }
+
 	    running=false;
 	}
 }
 
 
 
+function del()
+{
+    if (Program.length>1)
+    {
+        Program=Program.slice(0,ProgramPosition-1)+Program.slice(ProgramPosition,Program.length);
+        linhas.linhaP.value=Program;
+	if (linhas.linha2.value!='')
+           {
+	     MoveUP();
+	   }
+
+	else
+	    {
+	    linhas.linha1.value='';
+	    ProgramPosition=0;
+	    }
+    }
+	else
+    {
+        Program="";
+        linhas.linhaP.value=Program;
+        linhas.linha1.value="";
+	ProgramPosition=0;
+    }
+}
+
+
+
+function MoveDOWN()
+{
+    
+   if (learning==true && (ProgramPosition < Program.length))
+   {
+    ProgramPosition=ProgramPosition+1;
+    showprogramcode(Program[ProgramPosition-1]);
+   }
+}
+
+
+function MoveUP()
+{
+   if (ProgramPosition>1) 
+   {
+
+	linhas.linha2.value=linhas.linha3.value;
+        linhas.linha3.value=linhas.linha4.value;
+	linhas.linha4.value=linhas.linha5.value;
+        linhas.linha5.value=Stack[6];
+
+
+        for(irc=6;irc<1000;irc++)
+        {
+           Stack[irc]=Stack[irc+1];
+        }	   	
+
+            
+        ProgramPosition=ProgramPosition-1; 
+        showprogramcode1(Program[ProgramPosition-1]);
+   }
+	else if (ProgramPosition==1) 
+ {
+	linhas.linha1.value='';
+	linhas.linha2.value=linhas.linha3.value;
+        linhas.linha3.value=linhas.linha4.value;
+	linhas.linha4.value=linhas.linha5.value;
+        linhas.linha5.value=Stack[6];
+
+
+        for(irc=6;irc<1000;irc++)
+        {
+           Stack[irc]=Stack[irc+1];
+        }	   	
+            
+        ProgramPosition=ProgramPosition-1; 
+   }
+
+	
+	
+}
+
+
+function FindRoot()	
+{
+ linhas.linhaP.value='n2amm1a2bj2d3aÁ6a1bÁ4a2bÁ5ac4bMÀ5bMÂ6bMÃ0n4b6bfNÉ0n5b6bfNÈOàc1bnOâ2bnOãc3bnOéc3b1bOèc2b3bOánf9hP';	
+}
+
+function Integrate()
+{
+ linhas.linhaP.value='n9amm8amm6am0n5a6b7aác7bÀ4a9b7bj7aÀ4bj2d9bf5bj5a8b7bNÁ5bOànfP';
+}
+
+
 
 </script></head>
 <body onload="MyZoom()" onresize="MyZoom()" style="color: rgb(0, 0, 0); background-color: gray;" alink="#000099" link="#000099" vlink="#990099">
 <form id="linhas">
-<input name="linha5" type="text"  style="width:325px"><br>
-<input name="linha4" type="text"  style="width:325px"><br>
-<input name="linha3" type="text"  style="width:325px"><br>
-<input name="linha2" type="text"  style="width:325px"><br>
-<input name="linha1" type="text"  style="width:325px">
+<input name="linhaP" type="text"  style="width:346px"><br>
+<input name="linha5" type="text"  style="width:346px"><br>
+<input name="linha4" type="text"  style="width:346px"><br>
+<input name="linha3" type="text"  style="width:346px"><br>
+<input name="linha2" type="text"  style="width:346px"><br>
+<input name="linha1" type="text"  style="width:346px">
 </form>
 
-<input onclick="sto(); programming('a');" value="ySTOx" type="button" class="btnStyle4">
-<input onclick="rcl(); programming('b');" value="RCLx" type="button" class="btnStyle4">
+<input onclick="sto(); programming('a');" value="ySTOx" type="button" class="btnStyle1">
+<input onclick="rcl(); programming('b');" value="RCLx" type="button" class="btnStyle1">
 <input onclick="cla(); programming('c');" value="CLA" type="button" class="btnStyle1">
-<input onclick="dividido(); programming('/');" value="/" type="button" class="btnStyle1">
+<input onclick="dividido(); programming('d');" value="/" type="button" class="btnStyle1">
 <input onclick="xy(); programming('e');" value="x&lt;&gt;y" type="button" class="btnStyle1">
 
 <br>
-<input onclick="enter7(); programming('7');" value="7" type="button" class="btnStyle1">
-<input onclick="enter8(); programming('8');" value="8" type="button" class="btnStyle1">
-<input onclick="enter9(); programming('9');" value="9" type="button" class="btnStyle1">
-<input onclick="vezes(); programming('*');" value="*" type="button" class="btnStyle1">
+<input onclick="programming('7'); enter7();" value="7" type="button" class="btnStyle1">
+<input onclick="programming('8'); enter8();" value="8" type="button" class="btnStyle1">
+<input onclick="programming('9'); enter9();" value="9" type="button" class="btnStyle1">
+<input onclick="vezes(); programming('f');" value="*" type="button" class="btnStyle1">
 <input onclick="inverso(); programming('g');" value="1/x" type="button" class="btnStyle1">
 
 <br>
-<input onclick="enter4(); programming('4');" value="4" type="button" class="btnStyle1">
-<input onclick="enter5(); programming('5');" value="5" type="button" class="btnStyle1">
-<input onclick="enter6(); programming('6');" value="6" type="button" class="btnStyle1">
-<input onclick="menos(); programming('-');" value="-" type="button" class="btnStyle1">
+<input onclick="programming('4'); enter4();" value="4" type="button" class="btnStyle1">
+<input onclick="programming('5'); enter5();" value="5" type="button" class="btnStyle1">
+<input onclick="programming('6'); enter6();" value="6" type="button" class="btnStyle1">
+<input onclick="menos(); programming('h');" value="-" type="button" class="btnStyle1">
 <input onclick="pm(); programming('i');" value="&#177;" type="button" class="btnStyle1">
 
 <br>
-<input onclick="enter1(); programming('1');" value="1" type="button" class="btnStyle1">
-<input onclick="enter2(); programming('2');" value="2" type="button" class="btnStyle1">
-<input onclick="enter3(); programming('3');" value="3" type="button" class="btnStyle1">
-<input onclick="mais(); programming('+');" value="+" type="button" class="btnStyle1">
-<input onclick="ME(); programming('E');" value="E" type="button" class="btnStyle1">
+<input onclick="programming('1'); enter1();" value="1" type="button" class="btnStyle1">
+<input onclick="programming('2'); enter2();" value="2" type="button" class="btnStyle1">
+<input onclick="programming('3'); enter3();" value="3" type="button" class="btnStyle1">
+<input onclick="mais(); programming('j');" value="+" type="button" class="btnStyle1">
+<input onclick="ME(); programming('k');" value="E" type="button" class="btnStyle1">
 <br>
-<input onclick="enter0(); programming('0');" value="0" type="button" class="btnStyle1">
-<input onclick="enterponto(); programming('.');" value="." type="button" class="btnStyle1">
+<input onclick="programming('0'); enter0();" value="0" type="button" class="btnStyle1">
+<input onclick="enterponto(); programming('l');" value="." type="button" class="btnStyle1">
 <input onclick="doc(); programming('m');" value="C" type="button" class="btnStyle1">
-<input onclick="enterenter(); programming('R');" value="ENTER" type="button" class="btnStyle3">
+<input onclick="enterenter(); programming('n');" value="ENTER" type="button" class="btnStyle3">
 <br>
-<input onclick="MSin(); programming('o');" value="sin" type="button" class="btnStyle2">
-<input onclick="MCos(); programming('p');" value="cos" type="button" class="btnStyle2">
-<input onclick="MTan(); programming('q');" value="tan" type="button" class="btnStyle2">
+<input onclick="programming('o'); RSin();" value="sin" type="button" class="btnStyle2">
+<input onclick="programming('p'); RCos();" value="cos" type="button" class="btnStyle2">
+<input onclick="programming('q'); RTan();" value="tan" type="button" class="btnStyle2">
 <input onclick="MLog(); programming('r');" value="ln" type="button" class="btnStyle2">
 <input onclick="MExp(); programming('s');" value="exp" type="button" class="btnStyle2">
-<br>
-<input onclick="MaSin(); programming('t');" value="asin" type="button" class="btnStyle2">
-<input onclick="MaCos(); programming('u');" value="acos" type="button" class="btnStyle2">
-<input onclick="MaTan(); programming('v');" value="atan" type="button" class="btnStyle2">
-<input onclick="MPow(); programming('x');" value="y^x" type="button" class="btnStyle2">
-<input onclick="SEQT(); programming('O');" value="2Eqn" type="button" class="btnStyle2">
-<br>
-<input onclick="MSinh(); programming('y');" value="sinh" type="button" class="btnStyle2">
-<input onclick="MCosh(); programming('z');" value="cosh" type="button" class="btnStyle2">
-<input onclick="MTanh(); programming('A');" value="tanh" type="button" class="btnStyle2">
-<input onclick="MPi(); programming('B');" value="&pi;" type="button" class="btnStyle2">
-<input onclick="MRoot(); programming('C');" value="x&#8730;y" type="button" class="btnStyle2">
-<br>
-<input onclick="MaSinh(); programming('D');" value="asinh" type="button" class="btnStyle2">
-<input onclick="MaCosh(); programming('F');" value="acosh" type="button" class="btnStyle2">
-<input onclick="MaTanh(); programming('G');" value="atanh" type="button" class="btnStyle2">
-<input onclick="IsPrime(); programming('H');" value="IsPrime" type="button" class="btnStyle2">
-<input onclick="MFact(); programming('!');" value="!" type="button" class="btnStyle2">
-<br>
-<input onclick="R2C(); programming('J');" value="R2C" type="button" class="btnStyle2">
-<input onclick="C2R(); programming('K');" value="C2R" type="button" class="btnStyle2">
-<input onclick="MPiSCO(); programming('L');" value="&pi;/180" type="button" class="btnStyle2">
-<input onclick="P2R(); programming('M');" value="P2R" type="button" class="btnStyle2">
-<input onclick="R2P(); programming('N');" value="R2P" type="button" class="btnStyle2">
-<br>
+<input onclick="Marc(); programming('t');" value="arc" type="button" class="btnStyle2">
+<input onclick="FindRoot();" value="Root" type="button" class="btnStyle2">
 
-<img id="learnIMG" src="learn.png" height="15" width="63"  onclick="learn()">
-<img id="runIMG"   src="run.png" height="15" width="63"  onclick="Run()">
+
+<br>
+<input onclick="MSqrt(); programming('u');" value="&#8730;" type="button" class="btnStyle2">
+<input onclick="MPow(); programming('v');" value="y^x" type="button" class="btnStyle2">
+<input onclick="Mhyper(); programming('w');" value="hyp" type="button" class="btnStyle2">
+<input onclick="SEQT(); programming('x');" value="2Eqn" type="button" class="btnStyle2">
+<input onclick="P2R(); programming('y');" value="P2R" type="button" class="btnStyle2">
+<input onclick="R2P(); programming('z');" value="R2P" type="button" class="btnStyle2">
+<input onclick="Integrate();" value="Intgr" type="button" class="btnStyle2">
+
+
+<br>
+<input onclick="MPi(); programming('A');" value="&pi;" type="button" class="btnStyle2">
+<input onclick="MRoot(); programming('B');" value="x&#8730;y" type="button" class="btnStyle2">
+<input onclick="IP(); programming('C');" value="IP" type="button" class="btnStyle2">
+<input onclick="R2C(); programming('D');" value="R2C" type="button" class="btnStyle2">
+<input onclick="C2R(); programming('E');" value="C2R" type="button" class="btnStyle2">
+<input onclick="MPi180(); programming('F');" value="&pi;/180" type="button" class="btnStyle2">
+<input onclick="Mgamma(); programming('J');" value="&Gamma;" type="button" class="btnStyle2">
+
+
+<br>
+<input onclick="IsPrime(); programming('G');" value="IsPrime" type="button" class="btnStyle2">
+<input onclick="MoveUP()" value="UP" type="button" class="btnStyle5">
+<input onclick="MoveDOWN();" value="DOWN" type="button" class="btnStyle5">
+<input onclick="del();" value="DEL" type="button" class="btnStyle5">
+<input onclick="Run();" value="Run" type="button" class="btnStyle4">
+<input onclick="learn();" value="Prgm" type="button" class="btnStyle4">
+<input onclick="FP(); programming('I');" value="FP" type="button" class="btnStyle2">
+
+
+
+<br>
+<input onclick="doLBL();" value="LBL" type="button" class="btnStyle4">
+<input onclick="doGOTO()" value="GOTO" type="button" class="btnStyle4">
+<input onclick="programming('M');" value="x=0?" type="button" class="btnStyle4">
+<input onclick="programming('N');" value="x<y?" type="button" class="btnStyle4">
+<input onclick="programming('O');" value="STOP" type="button" class="btnStyle4">
+<input onclick="programming('P');" value="RTN" type="button" class="btnStyle4">
+<input onclick="programming('H'); MFact();" value="!" type="button" class="btnStyle2">
+
 
 </body></html>
