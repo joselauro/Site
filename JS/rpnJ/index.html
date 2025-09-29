@@ -51,7 +51,7 @@ var
   Stack = ["","","","","","","","","","","","","","","","","","","","","","","","","","","",""];
   edicao=true;
   novo=false;
-  Zoom=90;
+  Zoom=80;
   Eativo=false;
   learning=false;
   arc=false;
@@ -381,9 +381,9 @@ function MyZoom() {
       zoomw=h/540;}
 
     if (zoomw>zoomh){
-        Zoom=zoomh*100;
+        Zoom=zoomh*80;
      }else{
-        Zoom=zoomw*100;
+        Zoom=zoomw*80;
      }
 
      document.body.style.zoom = Zoom.toString()+"%"; 
